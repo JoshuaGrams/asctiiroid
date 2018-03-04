@@ -1,5 +1,7 @@
+local Camera = require 'camera'
 local HexGrid = require 'hex-grid'
 local Actor = require 'actor'
+local Player = require 'player'
 
 local function drawChar(g, ch, hx, hy, dir)
 	local px, py = g:toPixel(hx, hy)
@@ -8,6 +10,8 @@ local function drawChar(g, ch, hx, hy, dir)
 end
 
 function love.load()
+	camera = Camera.new(0, 0)
+
 	font = love.graphics.newFont('RobotoMono-Regular.ttf', 24)
 	love.graphics.setFont(font)
 	xc = 0.5 * font:getWidth('@')
@@ -17,17 +21,16 @@ function love.load()
 	grid.drawChar = drawChar
 
 	Actor.init(grid, font, xc, yc)
-	local player = Actor.new('A', 1, 2, 3)
-	player.vx = 0.75
-	player.vy = -0.25
+	player = Player.new('A', 0, 0, 0)
 	player.indicator = true
 end
 
 function love.draw()
-	local w, h = love.graphics.getDimensions()
+	camera:use()
 
 	love.graphics.setColor(15, 15, 15)
-	grid:draw(0, 0, w, h)
+	local b = camera.bounds
+	grid:draw(b.xMin, b.yMin, b.xMax-b.xMin, b.yMax-b.yMin)
 
 	love.graphics.setColor(130, 130, 80)
 	grid:forCells(function(actor, col, row)
@@ -46,19 +49,23 @@ function love.draw()
 	--]]
 end
 
+local function nextTurn()
+	grid:forCells(function(actor, col, row)
+		actor:update(col, row)
+	end)
+	local cells = {}
+	grid:forCells(function(actor, col, row)
+		col, row = actor:hex()
+		if not cells[col] then cells[col] = {} end
+		cells[col][row] = actor
+	end)
+	grid.cells = cells
+end
+
 function love.keypressed(k, s)
 	if k == 'escape' then
 		love.event.quit()
 	else
-		grid:forCells(function(actor, col, row)
-			actor:update(col, row)
-		end)
-		local cells = {}
-		grid:forCells(function(actor, col, row)
-			col, row = actor:hex()
-			if not cells[col] then cells[col] = {} end
-			cells[col][row] = actor
-		end)
-		grid.cells = cells
+		if player:keypressed(k, s) then nextTurn() end
 	end
 end

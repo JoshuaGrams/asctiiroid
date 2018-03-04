@@ -6,8 +6,9 @@ end
 
 -- One turn passes
 local function update(self, col, row)
-	self.vx, self.vy = self.vx + self.ax, self.vy + self.ay
 	self.hx, self.hy = self.hx + self.vx, self.hy + self.vy
+	self.vx, self.vy = self.vx + self.ax, self.vy + self.ay
+	self.ax, self.ay = 0, 0
 end
 
 local function draw(self)
