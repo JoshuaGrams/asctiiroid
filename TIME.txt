@@ -1,0 +1,4 @@
+2018-03-03	0.4	Hook up (existing) hex grid code with rotated characters.
+2018-03-04	1.0	Actor class with velocity and acceleration, analog position/velocity indicator.
+
+-- vim:ts=8
