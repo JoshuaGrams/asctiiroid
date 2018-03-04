@@ -13,36 +13,28 @@ end
 
 local function draw(self)
 	local r, g, b, a = love.graphics.getColor()
+	love.graphics.push()
+	love.graphics.translate(G:toPixel(self.hx, self.hy))
+	local th = self.dir * math.pi/3
 
-	if self.color then love.graphics.setColor(self.color) end
-	local c, th = self.ch, self.dir * math.pi/3
-	love.graphics.print(c, 0, 0, th, 1, 1, ox, oy)
-
-	if self.indicator then
-		love.graphics.setColor(128, 128, 255, 180)
-		local ix, iy = G:round(self.hx, self.hy)
-		local dx, dy = self.hx - ix, self.hy - iy
-		local x0, y0 = G:toPixel(dx, dy)
-		local x1, y1 = G:toPixel(dx + self.vx, dy + self.vy)
-		local r0, r1 = G.a/5, G.a/9
-		local ux, uy = x1 - x0, y1 - y0
-		local d = math.sqrt(ux*ux + uy*uy)
-		local th0, th1 = -math.pi/2, math.pi/2
-		if d > 1 then
-			ux, uy = ux/d, uy/d
-			local vx, vy = -uy, ux
-			th0, th1 = math.atan2(vy, vx), math.atan2(-vy, -vx)
-			love.graphics.polygon('fill', {
-				x0 - r0*vx, y0 - r0*vy,  -- back left
-				x1 - r1*vx, y1 - r1*vy,  -- front left
-				x1 + r1*vx, y1 + r1*vy,  -- front right
-				x0 + r0*vx, y0 + r0*vy   -- back right
-			})
-		end
-		love.graphics.arc('fill', 'closed', x0, y0, r0, th0, th0+math.pi)
-		love.graphics.arc('fill', 'closed', x1, y1, r1, th1, th1+math.pi)
+	local color
+	if self.color then
+		-- make a copy so we can modify alpha
+		color = {unpack(self.color)}
+	else
+		color = {love.graphics.getColor()}
 	end
+	if math.abs(self.vx) > 0.01 or math.abs(self.vy) > 0.01 then
+		color[4] = 48
+		love.graphics.setColor(color)
+		local vx, vy = G:toPixel(self.vx, self.vy)
+		love.graphics.print(self.ch, vx, vy, th, 1, 1, ox, oy)
+	end
+	color[4] = 255
+	love.graphics.setColor(color)
+	love.graphics.print(self.ch, 0, 0, th, 1, 1, ox, oy)
 
+	love.graphics.pop()
 	love.graphics.setColor(r, g, b, a)
 end
 
@@ -57,8 +49,6 @@ local function new(char, hx, hy, dir)
 		ax = 0, ay = 0,
 		dir = dir or 0
 	}, class)
-	local ix, iy = G:round(hx, hy)
-	G:set(ix, iy, a)
 	return a
 end
 

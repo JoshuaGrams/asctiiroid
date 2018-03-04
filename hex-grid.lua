@@ -68,6 +68,21 @@ local function drawHex(g, x, y, filled)
 	love.graphics.polygon(mode, points)
 end
 
+local function triColor(g, px, py, pw, ph, colors)
+	local x0, y0 = g:round(g:fromPixel(px - g.b, py))
+	local w, h = math.ceil(pw/g.dx), math.ceil(0.5 + ph/g.dy)
+	local p = g.points
+	for ix=x0,x0+w do
+		local ox = ix - (x0-1)
+		local y0 = y0 - math.floor(0.5*ox)
+		for iy=y0,y0+h do
+			love.graphics.setColor(colors[1 + (ix-iy)%3])
+			drawHex(g, ix, iy, true)
+		end
+	end
+end
+
+
 local function drawGrid(g, px, py, pw, ph)
 	local x0, y0 = g:round(g:fromPixel(px - g.b, py))
 	local w, h = math.ceil(pw/g.dx), math.ceil(0.5 + ph/g.dy)
@@ -171,6 +186,7 @@ local methods = {
 	round = roundHex,
 	toRect = toRect,  fromRect = fromRect,
 	drawHex = drawHex, draw = drawGrid,
+	triColor = triColor,
 	forCells = forCells, set = set, get = get,
 	dirs = dirs, neighbors = neighbors,
 	sequences = sequences,

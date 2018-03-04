@@ -22,7 +22,8 @@ function love.load()
 
 	Actor.init(grid, font, xc, yc)
 	player = Player.new('A', 0, 0, 0)
-	player.indicator = true
+
+	actors = { player }
 end
 
 function love.draw()
@@ -30,36 +31,21 @@ function love.draw()
 
 	love.graphics.setColor(15, 15, 15)
 	local b = camera.bounds
-	grid:draw(b.xMin, b.yMin, b.xMax-b.xMin, b.yMax-b.yMin)
+	local three = {
+		{15, 15, 15}, {18, 15, 12}, {11, 11, 11}
+	}
+	grid:triColor(b.xMin, b.yMin, b.xMax-b.xMin, b.yMax-b.yMin, three)
 
 	love.graphics.setColor(130, 130, 80)
-	grid:forCells(function(actor, col, row)
-		local px, py = grid:toPixel(col, row)
-		love.graphics.push()
-		love.graphics.translate(px, py)
+	for _,actor in ipairs(actors) do
 		actor:draw()
-		love.graphics.pop()
-	end)
-
-	--[[
-	love.graphics.setColor(128, 128, 255, 200)
-	local x, y = grid:toPixel(2, 1)
-	x, y = x + grid.a/2, y + grid.a/3
-	love.graphics.circle('fill', x, y, grid.a/8)
-	--]]
+	end
 end
 
 local function nextTurn()
-	grid:forCells(function(actor, col, row)
+	for _,actor in ipairs(actors) do
 		actor:update(col, row)
-	end)
-	local cells = {}
-	grid:forCells(function(actor, col, row)
-		col, row = actor:hex()
-		if not cells[col] then cells[col] = {} end
-		cells[col][row] = actor
-	end)
-	grid.cells = cells
+	end
 end
 
 function love.keypressed(k, s)
