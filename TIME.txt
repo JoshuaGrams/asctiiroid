@@ -2,7 +2,8 @@
 2018-03-04	 1.0	Actor class with velocity and acceleration, analog position/velocity indicator.
 2018-03-04	 1.1	Player class with keyboard controls.
 2018-03-04	 0.2	Draw on fractional grid coordinates (much better).
+2018-03-05	 1.2	Random walk map generation algorithm.
 ----------	----
-----------	 2.7
+----------	 3.9
 
 -- vim:ts=8

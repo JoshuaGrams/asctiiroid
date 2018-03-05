@@ -122,9 +122,9 @@ local function set(g, x, y, value)
 	g.cells[x][y] = value
 end
 
--- Clockwise from up-left.
+-- Clockwise from straight up.
 local dirs = {
-	{-1,0}, {0,-1}, {1,-1}, {1,0}, {0,1}, {-1,1}
+	{0,-1}, {1,-1}, {1,0}, {0,1}, {-1,1}, {-1,0}
 }
 
 local function neighbors(g, x, y)

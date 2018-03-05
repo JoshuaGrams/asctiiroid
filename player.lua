@@ -2,7 +2,7 @@ local parent = require 'actor'
 
 -- clockwise from straight up.
 local directions = {
-	{0, -1},  {1, -1},  {1, 0},  {0, 1},  {-1,1},  {-1, 0}
+	{0,-1}, {1,-1}, {1,0}, {0,1}, {-1,1}, {-1,0}
 }
 
 local controls = {
