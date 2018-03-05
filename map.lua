@@ -39,7 +39,7 @@ local function walker(w)
 	return {
 		x = w and w.x or 0,
 		y = w and w.y or 0,
-		dir = w and w.dir or 0
+		dir = w and w.dir or 4
 	}
 end
 

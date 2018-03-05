@@ -3,7 +3,8 @@
 2018-03-04	 1.1	Player class with keyboard controls.
 2018-03-04	 0.2	Draw on fractional grid coordinates (much better).
 2018-03-05	 1.2	Random walk map generation algorithm.
+2018-03-05	 0.4	Directions, basic rooms, camera smoothing.
 ----------	----
-----------	 3.9
+----------	 4.3
 
 -- vim:ts=8
