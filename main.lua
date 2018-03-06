@@ -12,37 +12,47 @@ end
 
 -- clockwise from x-axis (down-right).
 local dirs = {
-	{ 1,0, weight=3 },  -- don't turn
-	{ 0,1, weight=1 },  -- turn right
-	{ -1,1, weight=0 }, -- turn double right
-	{ -1,0, weight=0 }, -- reverse direction
-	{ 0,-1, weight=0 }, -- turn double left
-	{ 1,-1, weight=1 }  -- turn left
+	{ 1,0 },  -- don't turn
+	{ 0,1 },  -- turn right
+	{ -1,1 }, -- turn double right
+	{ -1,0 }, -- reverse direction
+	{ 0,-1 }, -- turn double left
+	{ 1,-1 }  -- turn left
 }
 
 -- A room consists of a list of the tiles which make up the
 -- room.  A walker enters at (0, 0). Exits should be just
 -- outside the room in the six directions above.
 local rooms = {
-	{
-		-- one-cell
+	single = {
 		{0,0},
-		weight=2, exits = {
+		exits = {
 			{1,0}, {0,1}, {-1,1}, {-1,0}, {0,-1}, {1,-1}
 		}
 	},
-	{
-		-- four-cell
-		{0,0}, {0,1}, {1,0}, {1,1},
-		weight=5, exits = {
-			{2,1}, {0,2}, {-1,2}, {-1,0}, {0,-1}, {2,-1}
+	four = {
+		{0,0}, {0,1},
+		{1,0}, {1,1},
+		exits = {
+			{2,0}, {1,1}, {0,1}, {-1,1}, {0,0}, {1,1}
 		}
 	},
-	{
-		-- seven-cell
-		{0,0}, {0,1}, {1,-1}, {1,0}, {1,1}, {2,-1}, {2,0},
-		weight = 3, exits = {
-			{3,0}, {1,2}, {-1,2}, {-1,0}, {1,-2}, {3,-2}
+	seven = {
+		{0,0}, {0,1},
+		{1,-1}, {1,0}, {1,1},
+		{2,-1}, {2,0},
+		exits = {
+			{2,0}, {1,1}, {0,1}, {0,0}, {1,-1}, {2,-1}
+		}
+	},
+	nineteen = {
+		{0,0}, {0,1}, {0,2},
+		{1,-1}, {1,0}, {1,1}, {1,2},
+		{2,-2}, {2,-1}, {2,0}, {2,1}, {2,2},
+		{3,-2}, {3,-1}, {3,0}, {3,1},
+		{4,-2}, {4,-1}, {4,0},
+		exits = {
+			{2,0}, {1,1}, {0,1}, {0,0}, {1,-1}, {2,-1}
 		}
 	}
 }
@@ -58,10 +68,14 @@ function love.load()
 	grid = HexGrid.new(2)
 	grid.drawChar = drawChar
 
-	map = Map.new(150, 0.002, dirs, rooms)
+	map = Map.new(500, dirs, rooms, {
+		directions = { 8, 5, 4, 0, 3, 3 },
+		rooms = { single = 0, four = 2, seven = 7, nineteen = 7 },
+		branch = 0.002
+	})
 	map:generate()
 
-	Actor.init(grid, font, xc, yc)
+	Actor.init(grid, xc, yc)
 	player = Player.new('A', 0, 0, 0)
 
 	actors = { player }

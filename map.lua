@@ -10,23 +10,24 @@ local function generateSeedFromClock()
 	return seed
 end
 
-local function normalizeWeights(list)
+local function normalizeWeights(items)
 	local totalWeight = 0
-	for _,item in ipairs(list) do
-		totalWeight = totalWeight + item.weight
+	for item,weight in pairs(items) do
+		totalWeight = totalWeight + weight
 	end
 
-	for _,item in ipairs(list) do
-		item.weight = item.weight / totalWeight
+	local out = {}
+	for item,weight in pairs(items) do
+		out[item] = weight / totalWeight
 	end
-	return list
+	return out
 end
 
-local function randomWeighted(list)
+local function randomWeighted(items)
 	local w, r = 0, math.random()
-	for i,item in ipairs(list) do
-		w = w + item.weight
-		if r <= w then return i, item end
+	for item,weight in pairs(items) do
+		w = w + weight
+		if r <= w then return item end
 	end
 	error('Weights should sum to 1.')
 end
@@ -39,7 +40,7 @@ local function walker(w)
 	return {
 		x = w and w.x or 0,
 		y = w and w.y or 0,
-		dir = w and w.dir or 4
+		dir = w and w.dir or 0
 	}
 end
 
@@ -57,8 +58,8 @@ local function addTile(map, x, y)
 end
 
 local function exitRandomly(map, walker, room, xDir, yDir)
-	local i, exit = randomWeighted(map.dirs)
-	local dir = i-1
+	local dir = randomWeighted(map.dirWeights) - 1
+	local exit = room.exits[dir+1]
 	local ex = exit[1]*xDir[1] + exit[2]*yDir[1]
 	local ey = exit[1]*xDir[2] + exit[2]*yDir[2]
 	walker.x = walker.x + ex
@@ -91,8 +92,8 @@ local function stepWalkers(map)
 	end
 
 	for _,w in ipairs(map.walkers) do
-		local _,r =  randomWeighted(map.rooms)
-		addRoom(map, r, w)
+		local r = randomWeighted(map.roomWeights)
+		addRoom(map, map.rooms[r], w)
 	end
 end
 
@@ -123,13 +124,15 @@ local methods = {
 }
 local class = { __index = methods }
 
-local function new(tileCount, branchChance, dirs, rooms)
+local function new(tileCount, dirs, rooms, weights)
 	return setmetatable(clear({
 		absoluteDirections = false,
 		limit = tileCount,
-		dirs = normalizeWeights(dirs),
-		rooms = normalizeWeights(rooms),
-		branch = branchChance
+		dirs = dirs,
+		rooms = rooms,
+		dirWeights = normalizeWeights(weights.directions),
+		roomWeights = normalizeWeights(weights.rooms),
+		branch = weights.branch
 	}), class)
 end
 

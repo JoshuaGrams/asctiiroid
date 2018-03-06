@@ -1,8 +1,4 @@
-local G, F, ox, oy
-
-local function hex(self)
-	return G:round(self.hx, self.hy)
-end
+local G, ox, oy
 
 -- One turn passes
 local function update(self, col, row)
@@ -38,7 +34,7 @@ local function draw(self)
 	love.graphics.setColor(r, g, b, a)
 end
 
-local methods = { hex = hex, update = update, draw = draw }
+local methods = { update = update, draw = draw }
 local class = { __index = methods }
 
 local function new(char, hx, hy, dir)
@@ -52,8 +48,8 @@ local function new(char, hx, hy, dir)
 	return a
 end
 
-local function init(grid, font, xCharCenter, yCharCenter)
-	G, F = grid, font
+local function init(grid, xCharCenter, yCharCenter)
+	G = grid
 	ox, oy = xCharCenter, yCharCenter
 end
 
