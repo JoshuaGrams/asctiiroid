@@ -7,8 +7,8 @@
 2018-03-05	 0.8	Another room, better exits.
 2018-03-06	 1.0	Move map generation into hex-grid.
 2018-03-06	 0.3	Multiple shadows as velocity gets higher.
-2018-03-06	 0.4	Generate wall tiles.
+2018-03-06	 0.6	Generate wall tiles, mess with visuals.
 ----------	----
-----------	 6.8
+----------	 7.0
 
 -- vim:ts=8

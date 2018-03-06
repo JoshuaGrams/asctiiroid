@@ -2,6 +2,7 @@ local Camera = require 'camera'
 local HexGrid = require 'hex-grid'
 local Actor = require 'actor'
 local Player = require 'player'
+local rooms = require 'rooms'
 
 local function drawChar(g, ch, hx, hy, dir)
 	local px, py = g:toPixel(hx, hy)
@@ -9,47 +10,10 @@ local function drawChar(g, ch, hx, hy, dir)
 	love.graphics.print(ch, px, py, dir*math.pi/3, 1, 1, xc, yc)
 end
 
--- A room consists of a list of the tiles which make up the
--- room.  A walker enters at (0, 0). Exits should be just
--- outside the room in the six directions above.
-local rooms = {
-	single = {
-		{0,0},
-		exits = {
-			{1,0}, {0,1}, {-1,1}, {-1,0}, {0,-1}, {1,-1}
-		}
-	},
-	four = {
-		{0,0}, {0,1},
-		{1,0}, {1,1},
-		exits = {
-			{2,0}, {1,1}, {0,1}, {-1,1}, {0,0}, {1,1}
-		}
-	},
-	seven = {
-		{0,0}, {0,1},
-		{1,-1}, {1,0}, {1,1},
-		{2,-1}, {2,0},
-		exits = {
-			{2,0}, {1,1}, {0,1}, {0,0}, {1,-1}, {2,-1}
-		}
-	},
-	nineteen = {
-		{0,0}, {0,1}, {0,2},
-		{1,-1}, {1,0}, {1,1}, {1,2},
-		{2,-2}, {2,-1}, {2,0}, {2,1}, {2,2},
-		{3,-2}, {3,-1}, {3,0}, {3,1},
-		{4,-2}, {4,-1}, {4,0},
-		exits = {
-			{2,0}, {1,1}, {0,1}, {0,0}, {1,-1}, {2,-1}
-		}
-	}
-}
-
 function love.load()
 	camera = Camera.new(0, 0)
 
-	font = love.graphics.newFont('RobotoMono-Regular.ttf', 24)
+	font = love.graphics.newFont('RobotoMono-Regular.ttf', 32)
 	love.graphics.setFont(font)
 	xc = 0.5 * font:getWidth('@')
 	yc = 0.55 * font:getHeight()
@@ -57,7 +21,7 @@ function love.load()
 	grid = HexGrid.new(2)
 	grid.drawChar = drawChar
 
-	grid:generate(500, rooms, {
+	grid:generate(1200, rooms, {
 		directions = { 8, 5, 4, 0, 3, 3 },
 		rooms = { single = 0, four = 2, seven = 7, nineteen = 7 },
 		branch = 0.002
@@ -80,6 +44,7 @@ function love.load()
 	end
 
 	player = Player.new('A', 0, 0, 4)
+	player.color = {150, 120, 150}
 
 	actors = { player }
 end
