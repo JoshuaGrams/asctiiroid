@@ -1,17 +1,12 @@
 local parent = require 'actor'
 
--- clockwise from straight up.
-local directions = {
-	{0,-1}, {1,-1}, {1,0}, {0,1}, {-1,1}, {-1,0}
-}
-
 local controls = {
-	upleft     = { dir = 5 },
-	up         = { dir = 0 },
-	upright    = { dir = 1 },
-	downright  = { dir = 2 },
-	down       = { dir = 3 },
-	downleft   = { dir = 4 },
+	upleft     = { dir = 3 },
+	up         = { dir = 4 },
+	upright    = { dir = 5 },
+	downright  = { dir = 0 },
+	down       = { dir = 1 },
+	downleft   = { dir = 2 },
 	wait       = {},
 	accelerate = { accelerate = true }
 }
@@ -27,9 +22,9 @@ local function keypressed(self, k, s)
 	return false
 end
 
-local function update(self)
+local function update(self, G)
 	if self.controls.accelerate then
-		local dir = directions[1+self.dir]
+		local dir = G.dirs[1+self.dir]
 		self.ax = self.ax + dir[1] * self.acceleration
 		self.ay = self.ay + dir[2] * self.acceleration
 		self.controls.accelerate = false

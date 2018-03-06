@@ -1,17 +1,18 @@
-local G, ox, oy
-
 -- One turn passes
-local function update(self, col, row)
+local function update(self, g)
 	self.hx, self.hy = self.hx + self.vx, self.hy + self.vy
 	self.vx, self.vy = self.vx + self.ax, self.vy + self.ay
 	self.ax, self.ay = 0, 0
 end
 
-local function draw(self)
+local function draw(self, G, ox, oy)
 	local r, g, b, a = love.graphics.getColor()
 	love.graphics.push()
 	love.graphics.translate(G:toPixel(self.hx, self.hy))
-	local th = self.dir * math.pi/3
+	-- Characters start facing up, so we need to rotate them
+	-- an extra 2 units to have direction 0 be down-right (the
+	-- positive x-axis).
+	local th = (self.dir+2)%6 * math.pi/3
 
 	local color
 	if self.color then
@@ -48,12 +49,4 @@ local function new(char, hx, hy, dir)
 	return a
 end
 
-local function init(grid, xCharCenter, yCharCenter)
-	G = grid
-	ox, oy = xCharCenter, yCharCenter
-end
-
-return {
-	new = new, init = init,
-	methods = methods, class = class
-}
+return { new = new, methods = methods, class = class }

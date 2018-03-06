@@ -23,6 +23,11 @@ local sizes = {
 	{ 71, 41 }   -- err +0.0003435 (1 pixel per 2900 hexes)
 }
 
+-- Clockwise from x-axis (down-right).
+local dirs = {
+	{1,0}, {0,1}, {-1,1}, {-1,0}, {0,-1}, {1,-1}
+}
+
 -- Integer grid coordinates to pixel at hex center.
 local function toPixel(g, x, y)
 	return x*3*g.b, (x + 2*y)*g.a
@@ -68,41 +73,36 @@ local function drawHex(g, x, y, filled)
 	love.graphics.polygon(mode, points)
 end
 
-local function triColor(g, px, py, pw, ph, colors)
-	local x0, y0 = g:round(g:fromPixel(px - g.b, py))
+local function forCellsIn(g, b, fn, ...)
+	local pw, ph = b.xMax - b.xMin, b.yMax - b.yMin
+	local x0, y0 = g:round(g:fromPixel(b.xMin - g.b, b.yMin))
 	local w, h = math.ceil(pw/g.dx), math.ceil(0.5 + ph/g.dy)
 	local p = g.points
 	for ix=x0,x0+w do
 		local ox = ix - (x0-1)
 		local y0 = y0 - math.floor(0.5*ox)
 		for iy=y0,y0+h do
-			love.graphics.setColor(colors[1 + (ix-iy)%3])
-			drawHex(g, ix, iy, true)
+			fn(g, ix, iy, ...)
 		end
 	end
 end
 
-
-local function drawGrid(g, px, py, pw, ph)
-	local x0, y0 = g:round(g:fromPixel(px - g.b, py))
-	local w, h = math.ceil(pw/g.dx), math.ceil(0.5 + ph/g.dy)
-	local p = g.points
-	for ix=x0,x0+w do
-		local ox = ix - (x0-1)
-		local y0 = y0 - math.floor(0.5*ox)
-		for iy=y0,y0+h do
-			if g.fillExisting and g:get(ix, iy) then
-				g:drawHex(ix, iy, true)
-			else
-				local x, y = g:toPixel(ix, iy)
-				love.graphics.line(
-					x+p[11], y+p[12],
-					x+p[1], y+p[2],
-					x+p[3], y+p[4],
-					x+p[5], y+p[6])
-			end
-		end
+local function drawGridHex(g, ix, iy)
+	if g.fillExisting and g:get(ix, iy) then
+		g:drawHex(ix, iy, true)
+	else
+		local x, y = g:toPixel(ix, iy)
+		local p = g.points
+		love.graphics.line(
+		x+p[11], y+p[12],
+		x+p[1], y+p[2],
+		x+p[3], y+p[4],
+		x+p[5], y+p[6])
 	end
+end
+
+local function drawGrid(g, b)
+	forCellsIn(g, b, drawGridHex)
 end
 
 local function forCells(g, fn)
@@ -119,13 +119,9 @@ end
 
 local function set(g, x, y, value)
 	if not g.cells[x] then g.cells[x] = {} end
+	if g.cells[x][y] == nil then g.n = g.n + 1 end
 	g.cells[x][y] = value
 end
-
--- Clockwise from straight up.
-local dirs = {
-	{0,-1}, {1,-1}, {1,0}, {0,1}, {-1,1}, {-1,0}
-}
 
 local function neighbors(g, x, y)
 	local out = {}
@@ -162,6 +158,7 @@ local function sequences(g, col, row, match)
 end
 
 local function clear(g)
+	g.n = 0
 	g.cells = {}
 end
 
@@ -180,17 +177,119 @@ local function floodFill(g, bg, val, x0, y0, x1, y1, x, y)
 	end
 end
 
+----------------------------------------------------------------
+-- Random-walk map generation
+
+local function generateSeedFromClock()
+	local seed = os.time() + math.floor(1000*os.clock())
+	seed = seed * seed % 1000000
+	seed = seed * seed % 1000000
+	return seed
+end
+
+local function normalizeWeights(items)
+	local totalWeight = 0
+	for item,weight in pairs(items) do
+		totalWeight = totalWeight + weight
+	end
+
+	local out = {}
+	for item,weight in pairs(items) do
+		out[item] = weight / totalWeight
+	end
+	return out
+end
+
+local function randomWeighted(items)
+	local w, r = 0, math.random()
+	for item,weight in pairs(items) do
+		w = w + weight
+		if r <= w then return item end
+	end
+	error('Weights should sum to 1.')
+end
+
+local function exitRandomly(map, walker, room, xDir, yDir)
+	local dir = randomWeighted(map.dirWeights) - 1
+	local exit = room.exits[dir+1]
+	local ex = exit[1]*xDir[1] + exit[2]*yDir[1]
+	local ey = exit[1]*xDir[2] + exit[2]*yDir[2]
+	walker.x = walker.x + ex
+	walker.y = walker.y + ey
+	if map.absoluteDirections then
+		walker.dir = dir
+	else
+		walker.dir = (walker.dir + dir) % #map.dirs
+	end
+end
+
+local function addRoom(map, room, walker)
+	-- Add floor tiles
+	local x0, y0, d = walker.x, walker.y, walker.dir+1
+	local xDir = map.dirs[d]
+	local yDir = map.dirs[1 + (d % #map.dirs)]
+	for _,tile in ipairs(room) do
+		local tx = x0 + tile[1]*xDir[1] + tile[2]*yDir[1]
+		local ty = y0 + tile[1]*xDir[2] + tile[2]*yDir[2]
+		set(map, tx, ty, false)
+	end
+
+	exitRandomly(map, walker, room, xDir, yDir)
+end
+
+local function walker(w)
+	return {
+		x = w and w.x or 0,
+		y = w and w.y or 0,
+		dir = w and w.dir or 0
+	}
+end
+
+local function stepWalkers(map)
+	if math.random() <= map.branchWeight then
+		local old = map.walkers[math.random(#map.walkers)]
+		table.insert(map.walkers, walker(old))
+	end
+
+	for _,w in ipairs(map.walkers) do
+		local r = randomWeighted(map.roomWeights)
+		addRoom(map, map.rooms[r], w)
+	end
+end
+
+local function initMap(g, tileCount, rooms, weights, seed)
+	clear(g)
+	g.walkers = { walker() }
+	g.absoluteDirections = false
+	g.limit = tileCount
+	g.rooms = rooms
+	g.dirWeights = normalizeWeights(weights.directions)
+	g.roomWeights = normalizeWeights(weights.rooms)
+	g.branchWeight = weights.branch
+	math.randomseed(seed or generateSeedFromClock())
+end
+
+local function generate(map, tileCount, rooms, weights, seed)
+	initMap(map, tileCount, rooms, weights, seed)
+	while map.n < map.limit do
+		stepWalkers(map)
+	end
+end
+
+
+----------------------------------------------------------------
 
 local methods = {
 	toPixel = toPixel,  fromPixel = fromPixel,
 	round = roundHex,
 	toRect = toRect,  fromRect = fromRect,
 	drawHex = drawHex, draw = drawGrid,
-	triColor = triColor,
+	forCellsIn = forCellsIn,
 	forCells = forCells, set = set, get = get,
 	dirs = dirs, neighbors = neighbors,
 	sequences = sequences,
-	clear = clear, floodFill = floodFill
+	clear = clear, floodFill = floodFill,
+	generate = generate
 }
 local class = { __index = methods }
 
@@ -199,7 +298,7 @@ local function new(a, b)
 	return setmetatable({
 		a = a, b = b,
 		dx = 3*b, dy = 2*a,
-		cells = {},
+		cells = {}, n = 0,
 		points = {
 			 2*b,0,  b,a,  -b,a,
 			-2*b,0, -b,-a,  b,-a

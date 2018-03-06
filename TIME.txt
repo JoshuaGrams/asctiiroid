@@ -5,7 +5,8 @@
 2018-03-05	 1.2	Random walk map generation algorithm.
 2018-03-05	 0.4	Directions, basic rooms, camera smoothing.
 2018-03-05	 0.8	Another room, better exits.
+2018-03-06	 1.0	Move map generation into hex-grid.
 ----------	----
-----------	 5.1
+----------	 6.1
 
 -- vim:ts=8

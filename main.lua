@@ -1,6 +1,5 @@
 local Camera = require 'camera'
 local HexGrid = require 'hex-grid'
-local Map = require 'map'
 local Actor = require 'actor'
 local Player = require 'player'
 
@@ -9,16 +8,6 @@ local function drawChar(g, ch, hx, hy, dir)
 	dir = dir or 0
 	love.graphics.print(ch, px, py, dir*math.pi/3, 1, 1, xc, yc)
 end
-
--- clockwise from x-axis (down-right).
-local dirs = {
-	{ 1,0 },  -- don't turn
-	{ 0,1 },  -- turn right
-	{ -1,1 }, -- turn double right
-	{ -1,0 }, -- reverse direction
-	{ 0,-1 }, -- turn double left
-	{ 1,-1 }  -- turn left
-}
 
 -- A room consists of a list of the tiles which make up the
 -- room.  A walker enters at (0, 0). Exits should be just
@@ -68,38 +57,42 @@ function love.load()
 	grid = HexGrid.new(2)
 	grid.drawChar = drawChar
 
-	map = Map.new(500, dirs, rooms, {
+	grid:generate(500, rooms, {
 		directions = { 8, 5, 4, 0, 3, 3 },
 		rooms = { single = 0, four = 2, seven = 7, nineteen = 7 },
 		branch = 0.002
 	})
-	map:generate()
 
-	Actor.init(grid, xc, yc)
-	player = Player.new('A', 0, 0, 0)
+	player = Player.new('A', 0, 0, 4)
 
 	actors = { player }
+end
+
+local threeColors = {
+	{15, 15, 15}, {18, 15, 12}, {11, 11, 11}
+}
+local function triColorHex(g, col, row, colors)
+	love.graphics.setColor(threeColors[1 + (col-row)%3])
+	g:drawHex(col, row, true)
 end
 
 function love.draw()
 	camera:use()
 
 	love.graphics.setColor(15, 15, 15)
-	local b = camera.bounds
-	local three = {
-		{15, 15, 15}, {18, 15, 12}, {11, 11, 11}
-	}
-	grid:triColor(b.xMin, b.yMin, b.xMax-b.xMin, b.yMax-b.yMin, three)
+	grid:forCellsIn(camera.bounds, triColorHex)
 
 	love.graphics.setColor(128, 0, 0, 128)
-	map:forTiles(function(hx, hy)
-		local px, py = grid:toPixel(hx, hy)
-		love.graphics.circle('line', px, py, grid.a)
+	grid:forCells(function(cell, hx, hy)
+		if cell == false then
+			local px, py = grid:toPixel(hx, hy)
+			love.graphics.circle('line', px, py, grid.a)
+		end
 	end)
 
 	love.graphics.setColor(130, 130, 80)
 	for _,actor in ipairs(actors) do
-		actor:draw()
+		actor:draw(grid, xc, yc)
 	end
 end
 
@@ -135,7 +128,7 @@ end
 
 local function nextTurn()
 	for _,actor in ipairs(actors) do
-		actor:update(col, row)
+		actor:update(grid)
 	end
 end
 
