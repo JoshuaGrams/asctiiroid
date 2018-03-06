@@ -108,7 +108,7 @@ end
 local function forCells(g, fn)
 	for ix,col in pairs(g.cells) do
 		for iy,cell in pairs(col) do
-			fn(cell, ix, iy)
+			fn(g, cell, ix, iy)
 		end
 	end
 end

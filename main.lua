@@ -62,6 +62,22 @@ function love.load()
 		rooms = { single = 0, four = 2, seven = 7, nineteen = 7 },
 		branch = 0.002
 	})
+	local floorTiles = {}
+	grid:forCells(function(g, cell, x, y)
+		table.insert(floorTiles, {x, y})
+	end)
+	for _,t in ipairs(floorTiles) do
+		local x0, y0 = unpack(t)
+		for i,dir in ipairs(grid.dirs) do
+			local x, y = x0 + dir[1], y0 + dir[2]
+			if grid:get(x, y) == nil then
+				local dir = math.random(0, 5)
+				local rock = Actor.new('O', x, y, dir)
+				rock.color = {90, 90, 65}
+				grid:set(x, y, rock)
+			end
+		end
+	end
 
 	player = Player.new('A', 0, 0, 4)
 
@@ -72,8 +88,16 @@ local threeColors = {
 	{15, 15, 15}, {18, 15, 12}, {11, 11, 11}
 }
 local function triColorHex(g, col, row)
+	local rock = Actor.new('#', 0, 0, 0)
+	rock.color = {45, 45, 30}
 	love.graphics.setColor(threeColors[1 + (col-row)%3])
 	g:drawHex(col, row, true)
+	local a = g:get(col, row)
+	if type(a) == 'table' then a:draw(g, xc, yc)
+	elseif a == nil then
+		rock.hx, rock.hy = col, row
+		rock:draw(g, xc, yc)
+	end
 end
 
 function love.draw()
@@ -81,14 +105,6 @@ function love.draw()
 
 	love.graphics.setColor(15, 15, 15)
 	grid:forCellsIn(camera.bounds, triColorHex)
-
-	love.graphics.setColor(128, 0, 0, 128)
-	grid:forCells(function(cell, hx, hy)
-		if cell == false then
-			local px, py = grid:toPixel(hx, hy)
-			love.graphics.circle('line', px, py, grid.a)
-		end
-	end)
 
 	love.graphics.setColor(130, 130, 80)
 	for _,actor in ipairs(actors) do
