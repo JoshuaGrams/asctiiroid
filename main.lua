@@ -71,7 +71,7 @@ end
 local threeColors = {
 	{15, 15, 15}, {18, 15, 12}, {11, 11, 11}
 }
-local function triColorHex(g, col, row, colors)
+local function triColorHex(g, col, row)
 	love.graphics.setColor(threeColors[1 + (col-row)%3])
 	g:drawHex(col, row, true)
 end

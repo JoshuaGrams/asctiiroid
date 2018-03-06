@@ -6,7 +6,8 @@
 2018-03-05	 0.4	Directions, basic rooms, camera smoothing.
 2018-03-05	 0.8	Another room, better exits.
 2018-03-06	 1.0	Move map generation into hex-grid.
+2018-03-06	 0.3	Multiple shadows as velocity gets higher.
 ----------	----
-----------	 6.1
+----------	 6.4
 
 -- vim:ts=8

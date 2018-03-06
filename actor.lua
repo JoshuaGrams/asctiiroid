@@ -21,11 +21,14 @@ local function draw(self, G, ox, oy)
 	else
 		color = {love.graphics.getColor()}
 	end
-	if math.abs(self.vx) > 0.01 or math.abs(self.vy) > 0.01 then
-		color[4] = 48
+	local d = math.sqrt(self.vx*self.vx + self.vy*self.vy)
+	local n = math.ceil(2*d)  -- two shadows per hex-grid unit.
+	for i=0,n-1 do
+		color[4] = math.min(128, 48 + 64*i)
 		love.graphics.setColor(color)
 		local vx, vy = G:toPixel(self.vx, self.vy)
-		love.graphics.print(self.ch, vx, vy, th, 1, 1, ox, oy)
+		local k = (n - i)/n
+		love.graphics.print(self.ch, k*vx, k*vy, th, 1, 1, ox, oy)
 	end
 	color[4] = 255
 	love.graphics.setColor(color)
