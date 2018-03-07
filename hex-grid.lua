@@ -180,13 +180,6 @@ end
 ----------------------------------------------------------------
 -- Random-walk map generation
 
-local function generateSeedFromClock()
-	local seed = os.time() + math.floor(1000*os.clock())
-	seed = seed * seed % 1000000
-	seed = seed * seed % 1000000
-	return seed
-end
-
 local function normalizeWeights(items)
 	local totalWeight = 0
 	for item,weight in pairs(items) do
@@ -266,7 +259,7 @@ local function initMap(g, tileCount, rooms, weights, seed)
 	g.dirWeights = normalizeWeights(weights.directions)
 	g.roomWeights = normalizeWeights(weights.rooms)
 	g.branchWeight = weights.branch
-	math.randomseed(seed or generateSeedFromClock())
+	math.randomseed(seed or 0)
 end
 
 local function generate(map, tileCount, rooms, weights, seed)

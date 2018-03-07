@@ -33,7 +33,7 @@ local function update(self, G)
 		self.dir = self.controls.dir
 		self.controls.dir = false
 	end
-	parent.methods.update(self)
+	parent.methods.update(self, G)
 end
 
 local methods = {
@@ -42,8 +42,8 @@ local methods = {
 }
 local class = { __index = setmetatable(methods, parent.class) }
 
-local function new(char, hx, hy, dir, acceleration)
-	local p = parent.new(char, hx, hy, dir)
+local function new(char, hx, hy, dir, color, acceleration)
+	local p = parent.new(char, hx, hy, dir, color)
 	p.acceleration = acceleration or 0.25
 	p.controls = {}
 	p.scancodes = {

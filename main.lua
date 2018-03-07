@@ -1,4 +1,5 @@
 local Camera = require 'camera'
+local Collision = require 'collision'
 local HexGrid = require 'hex-grid'
 local Actor = require 'actor'
 local Player = require 'player'
@@ -10,10 +11,71 @@ local function drawChar(g, ch, hx, hy, dir)
 	love.graphics.print(ch, px, py, dir*math.pi/3, 1, 1, xc, yc)
 end
 
+local function generateSeedFromClock()
+	local seed = os.time() + math.floor(1000*os.clock())
+	seed = seed * seed % 1000000
+	seed = seed * seed % 1000000
+	return seed
+end
+
+local function actorCollision(G, W, actor, radius, static)
+	local x, y = G:toPixel(actor.hx, actor.hy)
+	actor.collider = { x=x, y=y, r=radius }
+	W:add(actor, static)
+	if static then actor.collide = false end
+end
+
+local rockChars = { 'O', '0', 'Q' }
+local rockColor = {90, 90, 65}
+local function newRock(G, W, x, y, ch)
+	local dir = math.random(0, 5)
+	local ch = rockChars[math.random(#rockChars)]
+	local rock = Actor.new(ch, x, y, dir, rockColor)
+	G:set(x, y, rock)
+	actorCollision(G, W, rock, G.a, true)
+	return rock
+end
+
+local function createWalls(G, W)
+	local floorTiles = {}
+	G:forCells(function(g, cell, x, y)
+		table.insert(floorTiles, {x, y})
+	end)
+	local rocks = {}
+	for _,t in ipairs(floorTiles) do
+		local x0, y0 = unpack(t)
+		for i,dir in ipairs(G.dirs) do
+			local x, y = x0 + dir[1], y0 + dir[2]
+			if G:get(x, y) == nil then
+				table.insert(rocks, newRock(G, W, x, y))
+			end
+		end
+	end
+	for _,r in ipairs(rocks) do
+		local x0, y0 = r.hx, r.hy
+		for i,dir in ipairs(G.dirs) do
+			local x, y = x0 + dir[1], y0 + dir[2]
+			if G:get(x, y) == nil then
+				newRock(G, W, x, y)
+			end
+		end
+	end
+end
+
+local function generateLevel(level)
+	grid:generate(level.tiles, rooms, level.chances, level.seed)
+	createWalls(grid, world)
+
+	player = Player.new('A', 0, 0, 4, {110, 160, 110})
+	actorCollision(grid, world, player, 0.7*grid.a)
+
+	actors = { player }
+end
+
 function love.load()
 	camera = Camera.new(0, 0)
 
-	font = love.graphics.newFont('RobotoMono-Regular.ttf', 32)
+	font = love.graphics.newFont('RobotoMono-Regular.ttf', 36)
 	love.graphics.setFont(font)
 	xc = 0.5 * font:getWidth('@')
 	yc = 0.55 * font:getHeight()
@@ -21,32 +83,19 @@ function love.load()
 	grid = HexGrid.new(2)
 	grid.drawChar = drawChar
 
-	grid:generate(1200, rooms, {
-		directions = { 8, 5, 4, 0, 3, 3 },
-		rooms = { single = 0, four = 2, seven = 7, nineteen = 7 },
-		branch = 0.002
-	})
-	local floorTiles = {}
-	grid:forCells(function(g, cell, x, y)
-		table.insert(floorTiles, {x, y})
-	end)
-	for _,t in ipairs(floorTiles) do
-		local x0, y0 = unpack(t)
-		for i,dir in ipairs(grid.dirs) do
-			local x, y = x0 + dir[1], y0 + dir[2]
-			if grid:get(x, y) == nil then
-				local dir = math.random(0, 5)
-				local rock = Actor.new('O', x, y, dir)
-				rock.color = {90, 90, 65}
-				grid:set(x, y, rock)
-			end
-		end
-	end
+	world = Collision.new(3*grid.a)
 
-	player = Player.new('A', 0, 0, 4)
-	player.color = {150, 120, 150}
+	level = {
+		tiles = 1200,
+		chances = {
+			directions = { 8, 5, 4, 0, 3, 3 },
+			rooms = { single=0, four=2, seven=7, nineteen=7 },
+			branch = 0.002
+		},
+		seed = generateSeedFromClock()
+	}
 
-	actors = { player }
+	generateLevel(level)
 end
 
 local threeColors = {
@@ -89,18 +138,17 @@ local function scaleBounds(b, s)
 end
 
 function love.update(dt)
-	local b = scaleBounds(camera.bounds, 0.25)
+	local b = scaleBounds(camera.bounds, 0.125)
 	local px, py = grid:toPixel(player.hx, player.hy)
-	local dx, dy = 0, 0
+	local dx, dy = 0, 0  -- Camera motion to put player in bounds.
 	if px < b.xMin then  dx = px - b.xMin
 	elseif px > b.xMax then  dx = px - b.xMax  end
 	if py < b.yMin then  dy = py - b.yMin
 	elseif py > b.yMax then  dy = py - b.yMax  end
 
-	local d = math.sqrt(dx*dx + dy*dy)
-	if d > 0.5 then
-		local ct = 0.9
-		local k = 1 - (1 - 0.95)^(dt/ct)
+	if dx*dx + dy*dy > 1 then  -- More than 1 pixel out of bounds?
+		local cf, ct = 0.95, 0.9  -- Converge to 95% in 0.9 seconds.
+		local k = 1 - (1 - cf)^(dt/ct)
 		dx, dy = k*dx, k*dy
 	end
 	camera.cx = camera.cx + dx
@@ -108,6 +156,12 @@ function love.update(dt)
 end
 
 local function nextTurn()
+	local collisions = world:collisions()
+	for _,c in ipairs(collisions) do
+		if c.a.collide then c.a:collide(c.b, c.t) end
+		if c.b.collide then c.b:collide(c.b, c.t) end
+	end
+
 	for _,actor in ipairs(actors) do
 		actor:update(grid)
 	end
