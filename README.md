@@ -9,6 +9,8 @@ consumes a turn).  'A' accelerates (also consumes a turn).  'Z'
 does nothing for a turn (you continue to move at the current
 velocity).
 
+![screenshot](asctiiroid.jpg)
+
 I've had this idea in the back of my mind for a year or two.  I
 attempted it for a past 7DRL but had an unexpectedly bonkers
 week and didn't only got as far as drawing a basic hex grid.  I
