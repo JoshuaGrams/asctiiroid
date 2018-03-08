@@ -41,18 +41,8 @@ local function createWalls(G, W)
 	G:forCells(function(g, cell, x, y)
 		table.insert(floorTiles, {x, y})
 	end)
-	local rocks = {}
 	for _,t in ipairs(floorTiles) do
 		local x0, y0 = unpack(t)
-		for i,dir in ipairs(G.dirs) do
-			local x, y = x0 + dir[1], y0 + dir[2]
-			if G:get(x, y) == nil then
-				table.insert(rocks, newRock(G, W, x, y))
-			end
-		end
-	end
-	for _,r in ipairs(rocks) do
-		local x0, y0 = r.hx, r.hy
 		for i,dir in ipairs(G.dirs) do
 			local x, y = x0 + dir[1], y0 + dir[2]
 			if G:get(x, y) == nil then
