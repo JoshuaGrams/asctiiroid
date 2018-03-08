@@ -20,7 +20,7 @@ local function update(self, g)
 			end
 			if bounce then
 				t = c.tMin * 0.999
-				e = 0.7  -- elasticity
+				e = c.e or 0.7  -- elasticity
 				-- bounce velocity in pixel coordinates
 				local nv = c.dx * c.nx + c.dy * c.ny
 				local vx = c.vx - (1 + e) * nv * c.nx

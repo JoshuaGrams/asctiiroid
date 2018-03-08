@@ -1,4 +1,5 @@
 local parent = require 'actor'
+local Bullet = require 'bullet'
 
 local controls = {
 	upleft     = { dir = 3 },
@@ -8,6 +9,7 @@ local controls = {
 	down       = { dir = 1 },
 	downleft   = { dir = 2 },
 	wait       = {},
+	fire       = { fire = true },
 	accelerate = { accelerate = true }
 }
 
@@ -16,8 +18,13 @@ local function keypressed(self, k, s)
 	if name then
 		local c = controls[name]
 		if c.dir then self.controls.dir = c.dir end
-		if c.accelerate then self.controls.accelerate = true end
-		return true
+		if c.instant then c.instant(self) end
+		for k,v in pairs(c) do
+			if k ~= 'dir' and k ~= 'instant' then
+				self.controls[k] = v
+			end
+		end
+		return not c.instant
 	end
 	return false
 end
@@ -33,18 +40,36 @@ local function update(self, G)
 		self.dir = self.controls.dir
 		self.controls.dir = false
 	end
+	if self.controls.fire then
+		if self.ammo > 0 then
+			self.ammo = self.ammo - 1
+			Bullet.new(self, 'energy')
+		end
+		self.controls.fire = false
+	end
 	parent.methods.update(self, G)
+end
+
+local function collisionResponse(self)
+	local other = self.collider.other
+	if other and getmetatable(other) == Bullet.class then
+		generateLevel(level)
+		return false
+	end
+	return true
 end
 
 local methods = {
 	keypressed = keypressed,
 	update = update,
+	collisionResponse = collisionResponse
 }
 local class = { __index = setmetatable(methods, parent.class) }
 
 local function new(char, hx, hy, dir, color, acceleration)
 	local p = parent.new(char, hx, hy, dir, color)
 	p.acceleration = acceleration or 0.25
+	p.ammo = 3
 	p.controls = {}
 	p.scancodes = {
 		w = 'upleft',
@@ -53,6 +78,7 @@ local function new(char, hx, hy, dir, color, acceleration)
 		s = 'downleft',
 		d = 'down',
 		f = 'downright',
+		space = 'fire',
 		a = 'accelerate',
 		z = 'wait'
 	}

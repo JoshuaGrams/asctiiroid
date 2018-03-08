@@ -52,14 +52,13 @@ local function createWalls(G, W)
 	end
 end
 
-local function generateLevel(level)
+function generateLevel(level)
+	world:clear()
 	grid:generate(level.tiles, rooms, level.chances, level.seed)
 	createWalls(grid, world)
 
 	player = Player.new('A', 0, 0, 4, {110, 160, 110})
 	actorCollision(grid, world, player, 0.7*grid.a)
-
-	actors = { player }
 end
 
 function love.load()
@@ -74,6 +73,7 @@ function love.load()
 	grid.drawChar = drawChar
 
 	world = Collision.new(3*grid.a)
+	newActors = {}
 
 	level = {
 		tiles = 1200,
@@ -110,6 +110,13 @@ function love.draw()
 	love.graphics.setColor(15, 15, 15)
 	grid:forCellsIn(camera.bounds, triColorHex)
 
+	local actors = {}
+	for _,actor in pairs(world.objects) do
+		table.insert(actors, actor)
+	end
+	table.sort(actors, function(a, b)
+		return a.id < b.id
+	end)
 	love.graphics.setColor(130, 130, 80)
 	for _,actor in ipairs(actors) do
 		actor:draw(grid, xc, yc)
@@ -152,8 +159,13 @@ local function nextTurn()
 		if c.b.collide then c.b:collide(c.b, c.t) end
 	end
 
-	for _,actor in ipairs(actors) do
+	for _,actor in pairs(world.objects) do
 		actor:update(grid)
+	end
+
+	for i,actor in ipairs(newActors) do
+		world:add(actor)
+		newActors[i] = nil
 	end
 end
 

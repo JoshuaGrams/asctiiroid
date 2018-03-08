@@ -25,6 +25,8 @@ local function add(self, obj, fixed)
 		sortInto(self.fixed, self.size, obj)
 	elseif not self.objects[obj] then
 		self.objects[obj] = obj
+		obj.id = self.id
+		self.id = self.id + 1
 		local c = obj.collider
 		if not (c.vx and c.vy) then
 			c.vx, c.vy = 0, 0
@@ -171,7 +173,7 @@ local class = { __index = methods }
 
 local function new(cellSize)
 	return setmetatable({
-		size = cellSize,
+		size = cellSize, id = 0,
 		fixed = {}, moveable = {},
 		objects = {}
 	}, class)
