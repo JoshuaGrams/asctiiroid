@@ -20,10 +20,11 @@ local function update(self, g)
 			end
 			if bounce then
 				t = c.tMin * 0.999
+				e = 0.7  -- elasticity
 				-- bounce velocity in pixel coordinates
 				local nv = c.dx * c.nx + c.dy * c.ny
-				local vx = c.vx - 2 * nv * c.nx
-				local vy = c.vy - 2 * nv * c.ny
+				local vx = c.vx - (1 + e) * nv * c.nx
+				local vy = c.vy - (1 + e) * nv * c.ny
 				-- convert to hex and round to quarter units.
 				vx, vy = g:fromPixel(vx, vy)
 				vx = roundToSmaller(vx, 0.25)
