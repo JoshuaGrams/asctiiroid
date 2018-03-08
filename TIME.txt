@@ -9,7 +9,8 @@
 2018-03-06	 0.3	Multiple shadows as velocity gets higher.
 2018-03-06	 0.6	Generate wall tiles, mess with visuals.
 2018-03-07	 2.7	Collision detection and bouncing.
+2018-03-08	 0.7	Debug collision
 ----------	----
-----------	 9.7
+----------	10.4
 
 -- vim:ts=8

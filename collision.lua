@@ -84,12 +84,11 @@ local function collisionTime(c1, c2)
 	if c < 0 then return 0 end  -- already overlapping
 
 	local t1, t2 = solveQuadratic(a, b, c)
-	if t1 or t2 then
+	if t1 then
 		if t1 >= 0 and t1 < t2 then return t1
 		elseif t2 >= 0 then return t2 end
-	else
-		return false
 	end
+	return false
 end
 
 
@@ -99,6 +98,7 @@ end
 local function collide_objects(a, b, out)
 	if a == b then return end
 	local t = collisionTime(a.collider, b.collider)
+	local ac, bc = a.collider, b.collider
 	if t and t <= 1 then
 		table.insert(out, {a=a, b=b, t=t})
 	end
@@ -122,11 +122,7 @@ local function collisions_between(set1, set2, out)
 	return out
 end
 
-local function collide_cells(self, neighbors, objects, grid, out)
-	-- All objects are in the same cell: get its row/column.
-	local c = next(objects).collider
-	local col, row = cell(self.size, c.x, c.y)
-
+local function collide_cells(self, col, row, neighbors, objects, grid, out)
 	for _,n in ipairs(neighbors) do
 		local x, y = col + n[1], row + n[2]
 		local objects2 = grid[x] and grid[x][y]
@@ -157,8 +153,8 @@ local function collisions(self, out)
 	sort(self)
 	for x,col in pairs(self.moveable) do
 		for y,objects in pairs(col) do
-			collide_cells(self, all, objects, self.fixed, out)
-			collide_cells(self, dr, objects, self.moveable, out)
+			collide_cells(self, x, y, all, objects, self.fixed, out)
+			collide_cells(self, x, y, dr, objects, self.moveable, out)
 		end
 	end
 	return out
@@ -169,7 +165,7 @@ end
 
 local methods = {
 	add = add, remove = remove, clear = clear,
-	collisions = collisions
+	sort = sort, collisions = collisions
 }
 local class = { __index = methods }
 
