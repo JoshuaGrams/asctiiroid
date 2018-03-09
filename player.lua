@@ -10,7 +10,8 @@ local controls = {
 	downleft   = { dir = 2 },
 	wait       = {},
 	fire       = { fire = true },
-	accelerate = { accelerate = true }
+	accelerate = { accelerate = 1 },
+	afterburner = { accelerate = 3 },
 }
 
 local function keypressed(self, k, s)
@@ -31,9 +32,18 @@ end
 
 local function update(self, G)
 	if self.controls.accelerate then
+		local a = self.controls.accelerate
+		if a > 1 then
+			if self.afterburner > 0 then
+				self.afterburner = self.afterburner - 1
+			else
+				a = 1  -- out of boost fuel
+			end
+		end
+		local a = a * self.acceleration
 		local dir = G.dirs[1+self.dir]
-		self.ax = self.ax + dir[1] * self.acceleration
-		self.ay = self.ay + dir[2] * self.acceleration
+		self.ax = self.ax + a * dir[1]
+		self.ay = self.ay + a * dir[2]
 		self.controls.accelerate = false
 	end
 	if self.controls.dir then
@@ -43,7 +53,7 @@ local function update(self, G)
 	if self.controls.fire then
 		if self.ammo > 0 then
 			self.ammo = self.ammo - 1
-			Bullet.new(self, 'energy')
+			Bullet.new(self, 'rubber')
 		end
 		self.controls.fire = false
 	end
@@ -52,7 +62,7 @@ end
 
 local function collisionResponse(self)
 	local other = self.collider.other
-	if other and getmetatable(other) == Bullet.class then
+	if other and instanceOf(other, Bullet) then
 		generateLevel(level)
 		return false
 	end
@@ -71,6 +81,7 @@ local function new(char, hx, hy, dir, color, acceleration)
 	p.acceleration = acceleration or 0.25
 	p.ammo = 3
 	p.controls = {}
+	p.afterburner = 0
 	p.scancodes = {
 		w = 'upleft',
 		e = 'up',
@@ -79,6 +90,7 @@ local function new(char, hx, hy, dir, color, acceleration)
 		d = 'down',
 		f = 'downright',
 		space = 'fire',
+		q = 'afterburner',
 		a = 'accelerate',
 		z = 'wait'
 	}

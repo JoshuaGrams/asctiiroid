@@ -1,3 +1,6 @@
+function instanceOf(obj, type)
+	return getmetatable(obj) == type.class
+end
 
 local function cell(size, x, y)
 	local col = 1 + math.floor(x / size)
