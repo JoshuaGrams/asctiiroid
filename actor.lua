@@ -78,7 +78,7 @@ local function draw(self, G, ox, oy)
 	-- Characters start facing up, so we need to rotate them
 	-- an extra 2 units to have direction 0 be down-right (the
 	-- positive x-axis).
-	local th = (self.dir+2)%6 * math.pi/3
+	local th = (self.dir+self.base_dir)%6 * math.pi/3
 
 	local color
 	if self.color then
@@ -117,7 +117,7 @@ local function new(char, hx, hy, dir, color)
 		hx = hx, hy = hy,
 		vx = 0, vy = 0,
 		ax = 0, ay = 0,
-		dir = dir or 0,
+		dir = dir or 0, base_dir = 2,
 		color = color
 	}, class)
 	return a
