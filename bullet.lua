@@ -1,4 +1,5 @@
 local parent = require 'actor'
+local class
 
 local bulletType = {
 	energy = {
@@ -6,6 +7,12 @@ local bulletType = {
 		e = 0,  -- elasticity (don't bounce)
 		v = 2,  -- velocity (hexes per turn)
 		turns = 9,
+		color = {80, 160, 110}
+	},
+	slow_energy = {
+		ch = '*',
+		e = 0, v = 1.25,
+		turns = 15,
 		color = {80, 160, 110}
 	},
 	bouncy = {
@@ -29,6 +36,12 @@ local function update(self, G)
 	parent.methods.update(self, G)
 end
 
+local function collide(self, other, t)
+	if getmetatable(other) ~= class then
+		parent.methods.collide(self, other, t)
+	end
+end
+
 local function collisionResponse(self)
 	if self.collider.e == 0 then
 		remove(self)
@@ -47,9 +60,10 @@ end
 
 local methods = {
 	remove = remove,  update = update,
+	collide = collide,
 	collisionResponse = collisionResponse
 }
-local class = { __index = setmetatable(methods, parent.class) }
+class = { __index = setmetatable(methods, parent.class) }
 
 local function new(ship, kind)
 	local t = bulletType[kind]

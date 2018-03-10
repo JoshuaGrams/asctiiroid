@@ -41,11 +41,10 @@ local function newRock(G, W, x, y, ch)
 end
 
 local function createWalls(G, W)
-	local pickups = 1
 	local floorTiles = {}
 	G:forCells(function(g, cell, x, y)
 		table.insert(floorTiles, {x, y})
-		if pickups > 0 and math.random() < 0.005 then
+		if math.random() < 0.005 then
 			G:set(x, y, Turret.new(x, y))
 		end
 	end)

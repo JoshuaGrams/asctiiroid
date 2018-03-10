@@ -16,28 +16,34 @@ local function update(self)
 	self.dir = dir
 
 	self.turns = self.turns - 1
-	if self.turns <= 0 and math.sqrt(len2) < 30 * grid.a then
+	if self.turns <= 0 and math.sqrt(len2) < 22 * grid.a then
 		self.turns = self.timeout
 		Bullet.new(self, self.bulletType)
 	end
 end
 
-local methods = { update = update }
+local function collide(self, other, t)
+	if instanceOf(other, Bullet) or other == player then
+		world:remove(self)
+		grid:set(self.hx, self.hy, false)
+	end
+end
+
+local methods = { update = update, collide = collide }
 local class = { __index = setmetatable(methods, parent.class) }
 
 local function new(hx, hy, timeout, bulletType)
 	local dir = math.random(0, 5)
 	local self = parent.new('v', hx, hy, dir, {150, 30, 10})
 	self.base_dir = 5
-	self.timeout = timeout or 7
+	self.timeout = timeout or 10
 	self.turns = math.random(1, self.timeout)
-	self.bulletType = bulletType or 'energy'
-	self.ammo = 0  -- dummy variable: bullet sets this
+	self.bulletType = bulletType or 'slow_energy'
+	self.ammo = 0  -- dummy variable: our bullets need this
 
 	local x, y = grid:toPixel(hx, hy)
 	local vx, vy = unpack(grid.dirs[1+dir])
 	self.collider = { x=x, y=y, r=grid.a }
-	self.collide = false
 	grid:set(hx, hy, self)
 	world:add(self)
 	return setmetatable(self, class)
