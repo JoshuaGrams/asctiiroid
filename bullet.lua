@@ -24,8 +24,11 @@ local bulletType = {
 }
 
 local function remove(self)
-	world:remove(self)
-	self.owner.ammo = self.owner.ammo + 1
+	if not self.removed then
+		world:remove(self)
+		self.owner.ammo = self.owner.ammo + 1
+		self.removed = true
+	end
 end
 
 local function update(self, G)
