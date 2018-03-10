@@ -1,5 +1,6 @@
 local parent = require 'actor'
 local Bullet = require 'bullet'
+local Turret = require 'turret'
 local Upgrade = require 'upgrade'
 
 local controls = {
@@ -93,7 +94,8 @@ local function collisionResponse(self)
 	if other then
 		local bullet = instanceOf(other, Bullet)
 		local rock = instanceOf(other, Rock)
-		if bullet or rock then
+		local turret = instanceOf(other, Turret)
+		if bullet or rock or turret then
 			if rock and self.shield == 'bounce' then
 				self.collider.e = 0.7
 				return true
