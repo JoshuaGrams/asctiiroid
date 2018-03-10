@@ -12,7 +12,8 @@
 2018-03-08	 1.1	Debug collision.
 2018-03-08	 1.2	Bullets.
 2018-03-10	 0.5	One more collision bug.
+2018-03-10	 1.1	UI, powerups.
 ----------	----
-----------	12.0
+----------	13.1
 
 -- vim:ts=8

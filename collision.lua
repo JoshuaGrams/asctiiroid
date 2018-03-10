@@ -39,7 +39,7 @@ end
 
 local function remove(self, obj, fixed)
 	if fixed then
-		local x, y = cell(self.size, obj)
+		local x, y = cell(self.size, obj.collider.x, obj.collider.y)
 		local objects = self.fixed[x][y]
 		objects[obj] = nil
 	else

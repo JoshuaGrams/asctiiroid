@@ -1,5 +1,6 @@
 local parent = require 'actor'
 local Bullet = require 'bullet'
+local Upgrade = require 'upgrade'
 
 local controls = {
 	upleft     = { dir = 3 },
@@ -9,9 +10,10 @@ local controls = {
 	down       = { dir = 1 },
 	downleft   = { dir = 2 },
 	wait       = {},
+	use        = { use = true, instant = true },
 	fire       = { fire = true },
 	accelerate = { accelerate = 1 },
-	afterburner = { accelerate = 3 },
+	boost      = { accelerate = 3 },
 }
 
 local function keypressed(self, k, s)
@@ -19,7 +21,9 @@ local function keypressed(self, k, s)
 	if name then
 		local c = controls[name]
 		if c.dir then self.controls.dir = c.dir end
-		if c.instant then c.instant(self) end
+		if c.instant and type(c.instant) == 'function' then
+			c.instant(self)
+		end
 		for k,v in pairs(c) do
 			if k ~= 'dir' and k ~= 'instant' then
 				self.controls[k] = v
@@ -34,10 +38,10 @@ local function update(self, G)
 	if self.controls.accelerate then
 		local a = self.controls.accelerate
 		if a > 1 then
-			if self.afterburner > 0 then
-				self.afterburner = self.afterburner - 1
+			if self.boost > 0 then
+				self.boost = self.boost - 1
 			else
-				a = 1  -- out of boost fuel
+				a = 1  -- no more boost fuel
 			end
 		end
 		local a = a * self.acceleration
@@ -46,33 +50,113 @@ local function update(self, G)
 		self.ay = self.ay + a * dir[2]
 		self.controls.accelerate = false
 	end
+
 	if self.controls.dir then
 		self.dir = self.controls.dir
 		self.controls.dir = false
 	end
+
 	if self.controls.fire then
 		if self.ammo > 0 then
 			self.ammo = self.ammo - 1
-			Bullet.new(self, 'rubber')
+			Bullet.new(self, self.bulletType)
 		end
 		self.controls.fire = false
 	end
+
 	parent.methods.update(self, G)
+
+	self.controls.use = nil
+end
+
+local function die(self)
+	generateLevel(level)
+	return false
+end
+
+local function collide(self, other, t)
+	if instanceOf(other, Upgrade) then
+		if self.controls.use then
+			for k,v in pairs(other.properties) do
+				self[k] = v
+			end
+			world:remove(other, true)
+			grid:set(other.hx, other.hy, false)
+		end
+	else
+		parent.methods.collide(self, other, t)
+	end
 end
 
 local function collisionResponse(self)
 	local other = self.collider.other
-	if other and instanceOf(other, Bullet) then
-		generateLevel(level)
-		return false
+	if other then
+		local bullet = instanceOf(other, Bullet)
+		local rock = instanceOf(other, Rock)
+		if bullet or rock then
+			if rock and self.shield == 'bounce' then
+				self.collider.e = 0.7
+				return true
+			elseif self.shield == 'crystal' then
+				self.shield = nil
+				self.collider.e = 0.2
+				return true
+			else
+				return die(self)
+			end
+		end
 	end
 	return true
+end
+
+local function drawUI(self, x, y, w)
+	local old = love.graphics.getFont()
+	local f = uiFont
+	love.graphics.setFont(f)
+
+
+	love.graphics.setColor(0, 0, 0, 150)
+	love.graphics.rectangle('fill', x, y, w, 64)
+
+	x, y = x + 16, y + 16
+
+	local str = 'boost:'
+	for i=1,10 do
+		if i > self.boost then
+			str = str .. '-'
+		else
+			str = str .. '#'
+		end
+	end
+	love.graphics.setColor(self.color)
+	love.graphics.print(str, x, y)
+	x = x + f:getWidth(str) + 64
+
+	local b = Bullet.types[self.bulletType]
+	local str = ''
+	for i=1,self.ammo do str = str .. '*' end
+	str = str .. ': ' .. self.bulletType
+	love.graphics.setColor(b.color)
+	love.graphics.print(str, x, y)
+	x = x + f:getWidth(str) + 64
+
+
+	if self.shield then
+		str = self.shield .. ' shield'
+		love.graphics.setColor(self.color)
+		love.graphics.print(str, x, y)
+		x = x + f:getWidth(str) + 64
+	end
+
+	love.graphics.setFont(old)
 end
 
 local methods = {
 	keypressed = keypressed,
 	update = update,
-	collisionResponse = collisionResponse
+	collide = collide,
+	collisionResponse = collisionResponse,
+	drawUI = drawUI
 }
 local class = { __index = setmetatable(methods, parent.class) }
 
@@ -81,7 +165,8 @@ local function new(char, hx, hy, dir, color, acceleration)
 	p.acceleration = acceleration or 0.25
 	p.ammo = 3
 	p.controls = {}
-	p.afterburner = 0
+	p.boost = 0
+	p.bulletType = 'energy'
 	p.scancodes = {
 		w = 'upleft',
 		e = 'up',
@@ -90,7 +175,8 @@ local function new(char, hx, hy, dir, color, acceleration)
 		d = 'down',
 		f = 'downright',
 		space = 'fire',
-		q = 'afterburner',
+		g = 'use',
+		q = 'boost',
 		a = 'accelerate',
 		z = 'wait'
 	}

@@ -3,6 +3,8 @@ local Collision = require 'collision'
 local HexGrid = require 'hex-grid'
 local Actor = require 'actor'
 local Player = require 'player'
+local Upgrade = require 'upgrade'
+Rock = { class = { __index = setmetatable({}, Actor.class) }}  -- for collision identification.
 local rooms = require 'rooms'
 
 local function drawChar(g, ch, hx, hy, dir)
@@ -31,15 +33,20 @@ local function newRock(G, W, x, y, ch)
 	local dir = math.random(0, 5)
 	local ch = rockChars[math.random(#rockChars)]
 	local rock = Actor.new(ch, x, y, dir, rockColor)
+	setmetatable(rock, Rock.class)
 	G:set(x, y, rock)
 	actorCollision(G, W, rock, G.a, true)
 	return rock
 end
 
 local function createWalls(G, W)
+	local pickups = 1
 	local floorTiles = {}
 	G:forCells(function(g, cell, x, y)
 		table.insert(floorTiles, {x, y})
+		if pickups > 0 and math.random() < 0.01 then
+			G:set(x, y, Upgrade.new('+', x, y, {boost = 10}))
+		end
 	end)
 	for _,t in ipairs(floorTiles) do
 		local x0, y0 = unpack(t)
@@ -65,6 +72,7 @@ function love.load()
 	camera = Camera.new(0, 0)
 
 	font = love.graphics.newFont('RobotoMono-Regular.ttf', 36)
+	uiFont = love.graphics.newFont('RobotoMono-Regular.ttf', 24)
 	love.graphics.setFont(font)
 	xc = 0.5 * font:getWidth('@')
 	yc = 0.55 * font:getHeight()
@@ -121,6 +129,11 @@ function love.draw()
 	for _,actor in ipairs(actors) do
 		actor:draw(grid, xc, yc)
 	end
+
+	-- Reset transform and draw UI
+	love.graphics.origin()
+	local w = love.graphics.getWidth()
+	player:drawUI(0, 0, w)
 end
 
 local function scaleBounds(b, s)

@@ -8,7 +8,7 @@ local bulletType = {
 		turns = 9,
 		color = {80, 160, 110}
 	},
-	rubber = {
+	bouncy = {
 		ch = '*',
 		e = 0.95, v = 1.75,
 		turns = 30,
@@ -70,4 +70,7 @@ local function new(ship, kind)
 	return setmetatable(b, class)
 end
 
-return { new = new, methods = methods, class = class }
+return {
+	new = new, types = bulletType,
+	methods = methods, class = class
+}
