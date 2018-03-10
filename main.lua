@@ -156,7 +156,7 @@ local function nextTurn()
 	local collisions = world:collisions()
 	for _,c in ipairs(collisions) do
 		if c.a.collide then c.a:collide(c.b, c.t) end
-		if c.b.collide then c.b:collide(c.b, c.t) end
+		if c.b.collide then c.b:collide(c.a, c.t) end
 	end
 
 	for _,actor in pairs(world.objects) do

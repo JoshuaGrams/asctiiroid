@@ -11,6 +11,7 @@
 2018-03-07	 2.7	Collision detection and bouncing.
 2018-03-08	 1.1	Debug collision.
 2018-03-08	 1.2	Bullets.
+2018-03-10	 0.5	One more collision bug.
 ----------	----
 ----------	12.0
 
