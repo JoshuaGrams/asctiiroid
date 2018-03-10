@@ -59,9 +59,22 @@ local function update(self, G)
 	end
 
 	if self.controls.fire then
-		if self.ammo > 0 then
-			self.ammo = self.ammo - 1
-			Bullet.new(self, self.bulletType)
+		local a = (self.shot == 'multi') and {0,-1,1} or {0}
+		for _,i in ipairs(a) do
+			if self.ammo > 0 then
+				local b
+				local dir = (self.dir + i) % 6
+				self.ammo = self.ammo - 1
+				b = Bullet.new(self, self.bulletType)
+				local d = grid.dirs
+				local ox = (d[1+dir][1] + d[1+self.dir][1])/2
+				local oy = (d[1+dir][2] + d[1+self.dir][2])/2
+				b.hx, b.hy = b.hx + 1.5*ox, b.hy + 1.5*oy
+				b.vx, b.vy = b.vx + ox/4, b.vy + oy/4
+				b.turns = math.ceil(b.turns/3)
+				local c = b.collider
+				c.vx, c.vy = grid:toPixel(b.vx, b.vy)
+			end
 		end
 		self.controls.fire = false
 	end
@@ -72,6 +85,7 @@ local function update(self, G)
 end
 
 local function die(self)
+	depth, level = 1, levels[1]
 	generateLevel(level)
 	return false
 end

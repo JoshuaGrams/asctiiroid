@@ -7,7 +7,9 @@ local Jelly = require 'jelly'
 local Turret = require 'turret'
 local Upgrade = require 'upgrade'
 Rock = { class = { __index = setmetatable({}, Actor.class) }}  -- for collision identification.
-local rooms = require 'rooms'
+
+rooms = require 'rooms'
+levels = require 'levels'
 
 local function drawChar(g, ch, hx, hy, dir)
 	local px, py = g:toPixel(hx, hy)
@@ -46,7 +48,7 @@ local function createWalls(G, W)
 	G:forCells(function(g, cell, x, y)
 		table.insert(floorTiles, {x, y})
 		if math.random() < 0.005 then
-			Jelly.new(x, y)
+			Upgrade.new('multi', x, y)
 		end
 	end)
 	for _,t in ipairs(floorTiles) do
@@ -61,6 +63,9 @@ local function createWalls(G, W)
 end
 
 function generateLevel(level)
+	if not level.seed then
+		level.seed = generateSeedFromClock()
+	end
 	world:clear()
 	grid:generate(level.tiles, rooms, level.chances, level.seed)
 	createWalls(grid, world)
@@ -84,26 +89,16 @@ function love.load()
 	world = Collision.new(3*grid.a)
 	newActors = {}
 
-	level = {
-		tiles = 1200,
-		chances = {
-			directions = { 8, 5, 4, 0, 3, 3 },
-			rooms = { single=0, four=2, seven=7, nineteen=7 },
-			branch = 0.002
-		},
-		seed = generateSeedFromClock()
-	}
-
+	depth = 1
+	level = levels[depth]
 	generateLevel(level)
 end
 
-local threeColors = {
-	{15, 15, 15}, {18, 15, 12}, {11, 11, 11}
-}
 local function triColorHex(g, col, row)
 	local rock = Actor.new('#', 0, 0, 0)
 	rock.color = {45, 45, 30}
-	love.graphics.setColor(threeColors[1 + (col-row)%3])
+	local colors = level.background
+	love.graphics.setColor(colors[1 + (col-row)%3])
 	g:drawHex(col, row, true)
 	local a = g:get(col, row)
 	if type(a) == 'table' then a:draw(g, xc, yc)
