@@ -2,11 +2,13 @@ local parent = require 'actor'
 
 local upgradeTypes = {
 	boost = { ch = '+', properties = {boost=10} },
-	energy = { ch = '!', properties = {shot='single', bulletType='energy'} },
-	bounce = { ch = 'z', properties = {shot='single', bulletType='bounce'} },
+	blast = { ch = '!', properties = {shot='single', bulletType='energy'} },
+	reflect = { ch = 'z', properties = {shot='single', bulletType='bounce'} },
+	multi = { ch = 'w', properties = {shot='multi'} },
 	crystal = { ch = 'C', properties = {shield='crystal'} },
-	force = { ch = 'B', properties = {shield='bounce'} },
-	multi = { ch = 'w', properties = {shot='multi'} }
+	bounce = { ch = 'B', properties = {shield='bounce'} },
+	up = { ch = '<', properties = {depth=-1} },
+	down = { ch = '>', properties = {depth=1} }
 }
 
 local methods = {}

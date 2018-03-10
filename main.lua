@@ -44,13 +44,19 @@ local function newRock(G, W, x, y, ch)
 end
 
 local function createWalls(G, W)
+	-- Get a single list of all floor tiles.
 	local floorTiles = {}
 	G:forCells(function(g, cell, x, y)
-		table.insert(floorTiles, {x, y})
-		if math.random() < 0.005 then
-			Upgrade.new('multi', x, y)
+		if x == 0 and y == 0 then
+			if depth > 1 then
+				Upgrade.new('up', x, y)
+			end
+		else
+			table.insert(floorTiles, {x, y})
 		end
 	end)
+
+	-- Surround them with rocks.
 	for _,t in ipairs(floorTiles) do
 		local x0, y0 = unpack(t)
 		for i,dir in ipairs(G.dirs) do
@@ -60,18 +66,57 @@ local function createWalls(G, W)
 			end
 		end
 	end
+
+	-- Add items and enemies
+	for _,item in ipairs(level.contents) do
+		local n = math.random(item.min, item.max)
+		for i=1,n do
+			local j = math.random(#floorTiles)
+			local t = floorTiles[j]
+			if item[1] == 'upgrade' then
+				Upgrade.new(item[2], unpack(t))
+			elseif item[1] == 'turret' then
+				Turret.new(unpack(t))
+			elseif item[1] == 'jelly' then
+				Jelly.new(unpack(t))
+			elseif item[1] == 'exit' then
+				if item[2] == -1 then
+					Upgrade.new('up', unpack(t))
+				elseif item[2] == 1 then
+					Upgrade.new('down', unpack(t))
+				end
+			end
+			table.remove(floorTiles, j)
+		end
+	end
 end
 
-function generateLevel(level)
+function generateLevel(newPlayer)
+	level = levels[depth]
 	if not level.seed then
 		level.seed = generateSeedFromClock()
 	end
 	world:clear()
 	grid:generate(level.tiles, rooms, level.chances, level.seed)
 	createWalls(grid, world)
+	if levels[depth+1] then
+		levels[depth+1].seed = math.random() * 1000000
+	end
 
-	player = Player.new('A', 0, 0, 4, {110, 160, 110})
+	if newPlayer then
+		player = Player.new('A', 0, 0, 4, {110, 160, 110})
+	else
+		player.ammo = 3
+		player.hx, player.hy = 0, 0
+		player.vx, player.vy = 0, 0
+		player.controls = {}
+	end
 	actorCollision(grid, world, player, 0.7*grid.a)
+
+	for i,actor in ipairs(newActors) do
+		world:add(actor)
+		newActors[i] = nil
+	end
 end
 
 function love.load()
@@ -91,7 +136,7 @@ function love.load()
 
 	depth = 1
 	level = levels[depth]
-	generateLevel(level)
+	generateLevel(level, true)
 end
 
 local function triColorHex(g, col, row)
@@ -162,14 +207,19 @@ function love.update(dt)
 end
 
 local function nextTurn()
+	local d = depth
+	newActors = {}
+
 	local collisions = world:collisions()
 	for _,c in ipairs(collisions) do
 		if c.a.collide then c.a:collide(c.b, c.t) end
 		if c.b.collide then c.b:collide(c.a, c.t) end
+		if d ~= depth then return end
 	end
 
 	for _,actor in pairs(world.objects) do
 		actor:update(grid)
+		if d ~= depth then return end
 	end
 
 	for i,actor in ipairs(newActors) do

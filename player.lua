@@ -69,7 +69,7 @@ local function update(self, G)
 				local d = grid.dirs
 				local ox = (d[1+dir][1] + d[1+self.dir][1])/2
 				local oy = (d[1+dir][2] + d[1+self.dir][2])/2
-				b.hx, b.hy = b.hx + 1.5*ox, b.hy + 1.5*oy
+				b.hx, b.hy = self.hx + 0.75*ox, self.hy + 0.75*oy
 				b.vx, b.vy = b.vx + ox/4, b.vy + oy/4
 				b.turns = math.ceil(b.turns/3)
 				local c = b.collider
@@ -86,7 +86,7 @@ end
 
 local function die(self)
 	depth, level = 1, levels[1]
-	generateLevel(level)
+	generateLevel(level, true)
 	return false
 end
 
@@ -94,7 +94,16 @@ local function collide(self, other, t)
 	if instanceOf(other, Upgrade) then
 		if self.controls.use then
 			for k,v in pairs(other.properties) do
-				self[k] = v
+				if k == 'depth' then
+					local d = math.max(1, math.min(#levels, depth + v))
+					if d ~= depth then
+						depth, level = d, levels[d]
+						generateLevel()
+						return
+					end
+				else
+					self[k] = v
+				end
 			end
 			world:remove(other, true)
 			grid:set(other.hx, other.hy, false)

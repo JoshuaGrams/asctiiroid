@@ -15,7 +15,8 @@
 2018-03-10	 1.1	UI, powerups.
 2018-03-10	 1.0	Turrets.
 2018-03-10	 0.8	Jellies.
+2018-03-10	 1.6	Multi-shot, multiple levels, tweak things.
 ----------	----
-----------	14.9
+----------	17.0
 
 -- vim:ts=8
