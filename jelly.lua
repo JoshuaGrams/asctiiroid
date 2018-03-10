@@ -79,7 +79,7 @@ new = function(hx, hy, small, timeout, vMax)
 	local ch = small and 'o' or 'O'
 	local self = parent.new(ch, hx, hy, dir, {110, 20, 90})
 	self.small = small or false
-	self.timeout = timeout or 3
+	self.timeout = timeout or 5
 	self.turns = math.random(1, self.timeout)
 	self.vMax = vMax or 0.5
 
