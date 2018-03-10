@@ -3,6 +3,7 @@ local Collision = require 'collision'
 local HexGrid = require 'hex-grid'
 local Actor = require 'actor'
 local Player = require 'player'
+local Jelly = require 'jelly'
 local Turret = require 'turret'
 local Upgrade = require 'upgrade'
 Rock = { class = { __index = setmetatable({}, Actor.class) }}  -- for collision identification.
@@ -45,7 +46,7 @@ local function createWalls(G, W)
 	G:forCells(function(g, cell, x, y)
 		table.insert(floorTiles, {x, y})
 		if math.random() < 0.005 then
-			G:set(x, y, Turret.new(x, y))
+			Jelly.new(x, y)
 		end
 	end)
 	for _,t in ipairs(floorTiles) do

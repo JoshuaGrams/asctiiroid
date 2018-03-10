@@ -25,7 +25,6 @@ end
 local function collide(self, other, t)
 	if instanceOf(other, Bullet) or other == player then
 		world:remove(self)
-		grid:set(self.hx, self.hy, false)
 	end
 end
 
@@ -37,15 +36,13 @@ local function new(hx, hy, timeout, bulletType)
 	local self = parent.new('v', hx, hy, dir, {150, 30, 10})
 	self.base_dir = 5
 	self.timeout = timeout or 10
-	self.turns = math.random(1, self.timeout)
+	self.turns = math.random(math.min(3, self.timeout), self.timeout)
 	self.bulletType = bulletType or 'slow_energy'
 	self.ammo = 0  -- dummy variable: our bullets need this
 
 	local x, y = grid:toPixel(hx, hy)
-	local vx, vy = unpack(grid.dirs[1+dir])
 	self.collider = { x=x, y=y, r=grid.a }
-	grid:set(hx, hy, self)
-	world:add(self)
+	table.insert(newActors, self)
 	return setmetatable(self, class)
 end
 

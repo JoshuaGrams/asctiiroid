@@ -49,6 +49,7 @@ end
 
 local function clear(self)
 	self.fixed, self.objects = {}, {}
+	self.id = 0
 end
 
 local function sort(self)
