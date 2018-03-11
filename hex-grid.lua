@@ -250,9 +250,9 @@ local function stepWalkers(map)
 	end
 end
 
-local function initMap(g, tileCount, rooms, weights, seed)
+local function initMap(g, origin, tileCount, rooms, weights, seed)
 	clear(g)
-	g.walkers = { walker() }
+	g.walkers = { walker(origin) }
 	g.absoluteDirections = false
 	g.limit = tileCount
 	g.rooms = rooms
@@ -262,8 +262,8 @@ local function initMap(g, tileCount, rooms, weights, seed)
 	math.randomseed(seed or 0)
 end
 
-local function generate(map, tileCount, rooms, weights, seed)
-	initMap(map, tileCount, rooms, weights, seed)
+local function generate(map, origin, tileCount, rooms, weights, seed)
+	initMap(map, origin, tileCount, rooms, weights, seed)
 	while map.n < map.limit do
 		stepWalkers(map)
 	end

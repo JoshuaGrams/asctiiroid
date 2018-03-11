@@ -16,7 +16,9 @@
 2018-03-10	 1.0	Turrets.
 2018-03-10	 0.8	Jellies.
 2018-03-10	 1.6	Multi-shot, multiple levels, tweak things.
+2018-03-10	 0.7	Add money, work on level entrance/exits.
+2018-03-11	 0.8	Move between levels, items/enemies stay gone.
 ----------	----
-----------	17.0
+----------	18.5
 
 -- vim:ts=8

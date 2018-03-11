@@ -71,7 +71,10 @@ local function update(self, G)
 				local oy = (d[1+dir][2] + d[1+self.dir][2])/2
 				b.hx, b.hy = self.hx + 0.75*ox, self.hy + 0.75*oy
 				b.vx, b.vy = b.vx + ox/4, b.vy + oy/4
-				b.turns = math.ceil(b.turns/3)
+				if self.shot == 'multi' then
+					-- short range
+					b.turns = math.ceil(b.turns/3)
+				end
 				local c = b.collider
 				c.vx, c.vy = grid:toPixel(b.vx, b.vy)
 			end
@@ -97,16 +100,21 @@ local function collide(self, other, t)
 				if k == 'depth' then
 					local d = math.max(1, math.min(#levels, depth + v))
 					if d ~= depth then
+						self.hx, self.hy = other.hx, other.hy
 						depth, level = d, levels[d]
 						generateLevel()
 						return
 					end
+				elseif k == 'money' then
+					self.money = self.money + 1
 				else
 					self[k] = v
 				end
 			end
 			world:remove(other, true)
 			grid:set(other.hx, other.hy, false)
+			other.spawn[other.spawnIndex] = false
+			other.spawn.n = other.spawn.n - 1
 		end
 	else
 		parent.methods.collide(self, other, t)
@@ -175,6 +183,10 @@ local function drawUI(self, x, y, w)
 		x = x + f:getWidth(str) + 64
 	end
 
+	str = '$' .. tostring(self.money)
+	love.graphics.print(str, x, y)
+	x = f:getWidth(str) + 64
+
 	love.graphics.setFont(old)
 end
 
@@ -193,6 +205,7 @@ local function new(char, hx, hy, dir, color, acceleration)
 	p.ammo = 3
 	p.controls = {}
 	p.boost = 0
+	p.money = 0
 	p.bulletType = 'energy'
 	p.scancodes = {
 		w = 'upleft',

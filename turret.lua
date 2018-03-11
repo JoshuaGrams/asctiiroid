@@ -25,6 +25,7 @@ end
 local function collide(self, other, t)
 	if instanceOf(other, Bullet) or other == player then
 		world:remove(self)
+		self.spawn[self.spawnIndex] = false
 	end
 end
 

@@ -44,16 +44,15 @@ local function newRock(G, W, x, y, ch)
 end
 
 local function createWalls(G, W)
+	local origin
 	-- Get a single list of all floor tiles.
 	local floorTiles = {}
 	G:forCells(function(g, cell, x, y)
-		if x == 0 and y == 0 then
-			if depth > 1 then
-				Upgrade.new('up', x, y)
-			end
-		else
-			table.insert(floorTiles, {x, y})
+		if x == level.origin.x and y == level.origin.y then
+			origin = #floorTiles + 1
 		end
+
+		table.insert(floorTiles, {x, y})
 	end)
 
 	-- Surround them with rocks.
@@ -67,28 +66,57 @@ local function createWalls(G, W)
 		end
 	end
 
+	-- Add stairs up
+	if depth > 1 then
+		Upgrade.new('up', unpack(floorTiles[origin]))
+	end
+	origin = table.remove(floorTiles, origin)
+
 	-- Add items and enemies
-	for _,item in ipairs(level.contents) do
-		local n = math.random(item.min, item.max)
+	local destination
+	for _,itemType in ipairs(level.contents) do
+		if not itemType.actors then itemType.actors = {} end
+		local n
+		if itemType.max < 1 then
+			n = (math.random() < itemType.max) and 1 or 0
+		else
+			n = math.random(itemType.min, itemType.max)
+		end
+		if not itemType.actors.n then itemType.actors.n = n end
 		for i=1,n do
-			local j = math.random(#floorTiles)
-			local t = floorTiles[j]
-			if item[1] == 'upgrade' then
-				Upgrade.new(item[2], unpack(t))
-			elseif item[1] == 'turret' then
-				Turret.new(unpack(t))
-			elseif item[1] == 'jelly' then
-				Jelly.new(unpack(t))
-			elseif item[1] == 'exit' then
-				if item[2] == -1 then
-					Upgrade.new('up', unpack(t))
-				elseif item[2] == 1 then
-					Upgrade.new('down', unpack(t))
+			local item
+			local t = math.random(#floorTiles)
+			local tile = table.remove(floorTiles, t)
+			if itemType[1] == 'upgrade' then
+				item = Upgrade.new(itemType[2], unpack(tile))
+				if itemType[2] == 'down' then
+					destination = tile
 				end
+			elseif itemType[1] == 'turret' then
+				item = Turret.new(unpack(tile))
+			elseif itemType[1] == 'jelly' then
+				item = Jelly.new(unpack(tile))
 			end
-			table.remove(floorTiles, j)
+
+			-- We have to do the random generation (to use the
+			-- same random numbers in the same place every
+			-- time) but we want to remove dead/used items.
+			if itemType.actors[i] == false then
+				if instanceOf(item, Upgrade) then
+					grid:set(item.hx, item.hy, false)
+					world:remove(item, true)
+				else
+					table.remove(newActors)
+				end
+			else
+				itemType.actors[i] = item
+				item.spawn = itemType.actors
+				item.spawnIndex = i
+			end
 		end
 	end
+
+	return origin, destination
 end
 
 function generateLevel(newPlayer)
@@ -96,18 +124,24 @@ function generateLevel(newPlayer)
 	if not level.seed then
 		level.seed = generateSeedFromClock()
 	end
+	if newPlayer then
+		for _,i in ipairs(level.contents) do
+			i.actors = nil
+		end
+	end
 	world:clear()
-	grid:generate(level.tiles, rooms, level.chances, level.seed)
-	createWalls(grid, world)
+	grid:generate(level.origin, level.tiles, rooms, level.chances, level.seed)
+	local origin, dest = createWalls(grid, world)
 	if levels[depth+1] then
 		levels[depth+1].seed = math.random() * 1000000
+		levels[depth+1].origin = {x=dest[1], y=dest[2]}
 	end
 
 	if newPlayer then
-		player = Player.new('A', 0, 0, 4, {110, 160, 110})
+		local x, y = unpack(origin)
+		player = Player.new('A', x, y, 4, {110, 160, 110})
 	else
 		player.ammo = 3
-		player.hx, player.hy = 0, 0
 		player.vx, player.vy = 0, 0
 		player.controls = {}
 	end

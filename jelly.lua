@@ -38,14 +38,24 @@ end
 
 local function die(self)
 	world:remove(self)
+	if self.whole then
+		local w = self.whole
+		w.pieces = w.pieces - 1
+		if w.pieces <= 0 then
+			w.spawn[w.spawnIndex] = false
+		end
+	end
 end
 
 local function split(self, dir)
+	self.pieces = 0
 	local dirs = { (dir + 2) % 6, (dir - 2) % 6 }
 	for _,d in ipairs(dirs) do
 		local dx, dy = unpack(grid.dirs[1+d])
 		local j = new(self.hx + 0.5*dx, self.hy + 0.5*dy, true, self.timeout, self.vMax)
 		j.vx, j.vy = self.vx + 0.25*dx, self.vy + 0.25*dy
+		j.whole = self
+		self.pieces = self.pieces + 1
 	end
 
 	die(self)
