@@ -30,8 +30,8 @@ return {
 		contents = {
 			{ 'upgrade', 'money', min=2, max=7 },
 			{ 'upgrade', 'boost', min=1, max=3 },
-			{ 'upgrade', 'bounce', min=0, max=1 },
-			{ 'upgrade', 'multi', min=1, max=1 },
+			{ 'upgrade', 'crystal', min=0, max=1 },
+			{ 'upgrade', 'reflect', min=1, max=1 },
 			{ 'turret', min=3, max=5 },
 			{ 'jelly', min=4, max=7 },
 		},
