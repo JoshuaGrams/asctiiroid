@@ -87,10 +87,10 @@ local function draw(self, G, ox, oy)
 	else
 		color = {love.graphics.getColor()}
 	end
-	color[4] = 255
+	color[4] = 1
 	love.graphics.setColor(color)
 	love.graphics.print(self.ch, 0, 0, th, 1, 1, ox, oy)
-	color[4] = 64
+	color[4] = 0.25
 	love.graphics.setColor(color)
 	local vx, vy = G:toPixel(self.vx, self.vy)
 	love.graphics.print(self.ch, vx, vy, th, 1, 1, ox, oy)

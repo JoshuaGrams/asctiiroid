@@ -17,11 +17,11 @@ local class = { __index = setmetatable(methods, parent.class) }
 
 local function new(kind, hx, hy)
 	local u = upgradeTypes[kind]
-	local color = {20, 120, 20}
+	local color = {0.08, 0.47, 0.08}
 	if kind == 'money' then
-		color = {180, 180, 30}
+		color = {0.71, 0.71, 0.12}
 	elseif kind == 'up' or kind == 'down' then
-		color = {120, 120, 120}
+		color = {0.47, 0.47, 0.47}
 	end
 	local self = parent.new(u.ch, hx, hy, 4, color)
 	self.properties = u.properties

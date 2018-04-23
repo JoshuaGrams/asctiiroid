@@ -34,7 +34,7 @@ local class = { __index = setmetatable(methods, parent.class) }
 
 local function new(hx, hy, timeout, bulletType)
 	local dir = math.random(0, 5)
-	local self = parent.new('v', hx, hy, dir, {150, 30, 10})
+	local self = parent.new('v', hx, hy, dir, {0.59, 0.12, 0.04})
 	self.base_dir = 5
 	self.timeout = timeout or 10
 	self.turns = math.random(math.min(3, self.timeout), self.timeout)

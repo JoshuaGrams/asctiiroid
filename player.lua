@@ -150,7 +150,7 @@ local function drawUI(self, x, y, w)
 	love.graphics.setFont(f)
 
 
-	love.graphics.setColor(0, 0, 0, 150)
+	love.graphics.setColor(0, 0, 0, 0.59)
 	love.graphics.rectangle('fill', x, y, w, 64)
 
 	x, y = x + 16, y + 16

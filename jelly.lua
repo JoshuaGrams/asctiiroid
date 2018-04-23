@@ -87,7 +87,7 @@ local class = { __index = setmetatable(methods, parent.class) }
 new = function(hx, hy, small, timeout, vMax)
 	local dir = math.random(0, 5)
 	local ch = small and 'o' or 'O'
-	local self = parent.new(ch, hx, hy, dir, {110, 20, 90})
+	local self = parent.new(ch, hx, hy, dir, {0.43, 0.08, 0.35})
 	self.small = small or false
 	self.timeout = timeout or 5
 	self.turns = math.random(1, self.timeout)

@@ -7,19 +7,19 @@ local bulletType = {
 		e = 0,  -- elasticity (don't bounce)
 		v = 2,  -- velocity (hexes per turn)
 		turns = 9,
-		color = {80, 160, 110}
+		color = {0.31, 0.63, 0.43}
 	},
 	slow_energy = {
 		ch = '*',
 		e = 0, v = 1.25,
 		turns = 15,
-		color = {80, 160, 110}
+		color = {0.31, 0.63, 0.43}
 	},
 	bouncy = {
 		ch = '*',
 		e = 0.95, v = 1.75,
 		turns = 30,
-		color = {145, 145, 80}
+		color = {0.57, 0.57, 0.31}
 	}
 }
 

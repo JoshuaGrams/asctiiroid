@@ -32,7 +32,7 @@ local function actorCollision(G, W, actor, radius, static)
 end
 
 local rockChars = { 'O', '0', 'Q' }
-local rockColor = {90, 90, 65}
+local rockColor = {0.35, 0.35, 0.25}
 local function newRock(G, W, x, y, ch)
 	local dir = math.random(0, 5)
 	local ch = rockChars[math.random(#rockChars)]
@@ -139,7 +139,7 @@ function generateLevel(newPlayer)
 
 	if newPlayer then
 		local x, y = unpack(origin)
-		player = Player.new('A', x, y, 4, {110, 160, 110})
+		player = Player.new('A', x, y, 4, {0.43, 0.63, 0.43})
 	else
 		player.ammo = 3
 		player.vx, player.vy = 0, 0
@@ -175,7 +175,7 @@ end
 
 local function triColorHex(g, col, row)
 	local rock = Actor.new('#', 0, 0, 0)
-	rock.color = {45, 45, 30}
+	rock.color = {0.18, 0.18, 0.12}
 	local colors = level.background
 	love.graphics.setColor(colors[1 + (col-row)%3])
 	g:drawHex(col, row, true)
@@ -190,7 +190,7 @@ end
 function love.draw()
 	camera:use()
 
-	love.graphics.setColor(15, 15, 15)
+	love.graphics.setColor(0.06, 0.06, 0.06)
 	grid:forCellsIn(camera.bounds, triColorHex)
 
 	local actors = {}
@@ -200,7 +200,7 @@ function love.draw()
 	table.sort(actors, function(a, b)
 		return a.id < b.id
 	end)
-	love.graphics.setColor(130, 130, 80)
+	love.graphics.setColor(0.51, 0.51, 0.31)
 	for _,actor in ipairs(actors) do
 		actor:draw(grid, xc, yc)
 	end
