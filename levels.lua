@@ -8,7 +8,9 @@ return {
 			branch = 0
 		},
 		contents = {
-			{ 'upgrade', 'down', min=1, max=1 }
+			{ 'upgrade', 'down', min=1, max=1 },
+			{ 'upgrade', 'money', min=2, max=5 },
+			{ 'jelly', min=1, max=2 }
 		},
 		background = {
 			{0.06, 0.06, 0.06}, {0.07, 0.06, 0.05}, {0.04, 0.04, 0.04}
@@ -24,8 +26,8 @@ return {
 			branch = 0.007
 		},
 		contents = {
-			{ 'upgrade', 'money', min=3, max=6 },
 			{ 'upgrade', 'down', min=1, max=1 },
+			{ 'upgrade', 'money', min=3, max=6 },
 			{ 'upgrade', 'boost', min=1, max=3 },
 			{ 'upgrade', 'bounce', min=0, max=1 },
 			{ 'upgrade', 'multi', min=1, max=1 },
