@@ -1,5 +1,5 @@
 
-local function roundToSmaller(x, r)
+local function roundDownTo(x, r)
 	local s = x < 0 and -1 or 1
 	return s * math.floor(math.abs(x) / r) * r
 end
@@ -27,8 +27,8 @@ local function update(self, g)
 				local vy = c.vy - (1 + e) * nv * c.ny
 				-- convert to hex and round to quarter units.
 				vx, vy = g:fromPixel(vx, vy)
-				vx = roundToSmaller(vx, 0.25)
-				vy = roundToSmaller(vy, 0.25)
+				vx = roundDownTo(vx, 0.25)
+				vy = roundDownTo(vy, 0.25)
 				self.vx, self.vy = vx, vy
 				c.vx, c.vy = g:toPixel(vx, vy)
 			end
@@ -36,8 +36,8 @@ local function update(self, g)
 		end
 	end
 
-	self.hx = self.hx + roundToSmaller(t*old_vx, 0.25)
-	self.hy = self.hy + roundToSmaller(t*old_vy, 0.25)
+	self.hx = self.hx + roundDownTo(t*old_vx, 0.25)
+	self.hy = self.hy + roundDownTo(t*old_vy, 0.25)
 	if c then c.x, c.y = g:toPixel(self.hx, self.hy) end
 end
 
