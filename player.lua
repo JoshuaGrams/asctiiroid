@@ -207,17 +207,18 @@ local function new(char, hx, hy, dir, color, acceleration)
 	p.money = 0
 	p.bulletType = 'energy'
 	p.scancodes = {
-		w = 'upleft',
-		e = 'up',
-		r = 'upright',
-		s = 'downleft',
-		d = 'down',
-		f = 'downright',
-		space = 'fire',
-		g = 'use',
-		q = 'boost',
-		a = 'accelerate',
-		z = 'wait'
+		u = 'upleft',
+		i = 'up',
+		o = 'upright',
+		j = 'downleft',
+		k = 'down',
+		l = 'downright',
+		w = 'boost',
+		a = 'fire',
+		s = 'accelerate',
+		d = 'fire',
+		e = 'use',
+		space = 'wait'
 	}
 	return setmetatable(p, class)
 end
