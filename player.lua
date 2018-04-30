@@ -12,7 +12,7 @@ local controls = {
 	down       = { dir = 1 },
 	downleft   = { dir = 2 },
 	wait       = {},
-	use        = { use = true, instant = true },
+	use        = { use = true },
 	fire       = { fire = true },
 	accelerate = { accelerate = 1 },
 	boost      = { accelerate = 3 },

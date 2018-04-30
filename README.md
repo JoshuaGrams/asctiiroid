@@ -11,7 +11,7 @@ positions even if you're using a different keyboard layout):
 * A - Accelerate (uses a turn).
 * Q - Boost (higher acceleration if you have fuel: uses a turn).
 * Z - Do nothing for one turn (drift at the current velocity).
-* G - Use any powerup or exit you touch next turn (doesn't use a turn).
+* G - Use any powerup or exit you touch.
 * Space - Fire a shot, if you have ammo.
 
 I've used the Asteroids mechanic where you have a limited number
