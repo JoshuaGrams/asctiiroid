@@ -21,6 +21,6 @@ of active bullets.
 
 I've had this idea in the back of my mind for a year or two.  I
 attempted it for a past 7DRL but had an unexpectedly bonkers
-week and didn't only got as far as drawing a basic hex grid.
+week and only got as far as drawing a basic hex grid.
 
 --Josh Grams <josh@qualdan.com>
