@@ -10,7 +10,7 @@ return {
 		contents = {
 			{ 'upgrade', 'down', min=1, max=1 },
 			{ 'upgrade', 'money', min=2, max=5 },
-			{ 'jelly', min=1, max=2 }
+			{ 'jelly', n=1 }
 		},
 		background = {
 			{0.06, 0.06, 0.06}, {0.07, 0.06, 0.05}, {0.04, 0.04, 0.04}
@@ -29,8 +29,8 @@ return {
 			{ 'upgrade', 'down', min=1, max=1 },
 			{ 'upgrade', 'money', min=3, max=6 },
 			{ 'upgrade', 'boost', min=1, max=3 },
-			{ 'upgrade', 'bounce', min=0, max=1 },
-			{ 'upgrade', 'multi', min=1, max=1 },
+			{ 'upgrade', 'bounce', n=0.5 },
+			{ 'upgrade', 'multi', n=1 },
 			{ 'turret', min=1, max=2 },
 			{ 'jelly', min=2, max=5 }
 		},

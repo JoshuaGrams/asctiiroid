@@ -76,9 +76,13 @@ local function createWalls(G, W)
 	local destination
 	for _,itemType in ipairs(level.contents) do
 		if not itemType.actors then itemType.actors = {} end
-		local n
-		if itemType.max < 1 then
-			n = (math.random() < itemType.max) and 1 or 0
+		local n = itemType.n
+		if n then
+			if n < 1 then
+				n = (math.random() < n) and 1 or 0
+			else
+				n = math.floor(n)
+			end
 		else
 			n = math.random(itemType.min, itemType.max)
 		end
