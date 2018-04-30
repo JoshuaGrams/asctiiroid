@@ -1,3 +1,4 @@
+local Upgrade = require 'upgrade'
 local parent = require 'actor'
 local class
 
@@ -47,7 +48,9 @@ end
 
 local function collisionResponse(self)
 	if self.collider.e == 0 then
-		remove(self)
+		if not instanceOf(self.collider.other, Upgrade) then
+			remove(self)
+		end
 		return false
 	else
 		if self.bounces then
