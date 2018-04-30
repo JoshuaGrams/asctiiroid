@@ -1,10 +1,26 @@
 return {
 	{
+		tiles = 700,
+		origin = { x=0, y=0 },
+		chances = {
+			directions = { 0, 5, 4, 0, 0, 0 },
+			rooms = { hex5 = 1 },
+			branch = 0
+		},
+		contents = {
+			{ 'upgrade', 'down', min=1, max=1 }
+		},
+		background = {
+			{0.06, 0.06, 0.06}, {0.07, 0.06, 0.05}, {0.04, 0.04, 0.04}
+		}
+
+	},
+	{
 		tiles = 1200,
 		origin = { x=0, y=0 },
 		chances = {
 			directions = { 8, 5, 4, 0, 3, 3 },
-			rooms = { four=2, seven=7, nineteen=7 },
+			rooms = { rhomb=2, hex2=7, hex3=7 },
 			branch = 0.007
 		},
 		contents = {
@@ -24,7 +40,7 @@ return {
 		tiles = 1500,
 		chances = {
 			directions = { 12, 5, 4, 0, 3, 3 },
-			rooms = { four=4, seven=7, nineteen=7 },
+			rooms = { rhomb=4, hex2=7, hex3=7 },
 			branch = 0.01
 		},
 		contents = {
