@@ -11,7 +11,7 @@ positions even if you're using a different keyboard layout):
 * S - Accelerate (uses a turn).
 * A or D - Fire a shot, if you have ammo.
 * W - Boost (higher acceleration if you have fuel: uses a turn).
-* E - Use any powerup or exit you touch.
+* E - Use an exit or grab an upgrade.
 * Space - Wait for one turn (drift at the current velocity).
 
 I've used the Asteroids mechanic where you have a limited number
