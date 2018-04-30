@@ -168,9 +168,8 @@ local function drawUI(self, x, y, w)
 	x = x + f:getWidth(str) + 64
 
 	local b = Bullet.types[self.bulletType]
-	local str = ''
+	local str = 'shots (' .. self.bulletType ..'): '
 	for i=1,self.ammo do str = str .. '*' end
-	str = str .. ': ' .. self.bulletType
 	love.graphics.setColor(b.color)
 	love.graphics.print(str, x, y)
 	x = x + f:getWidth(str) + 64
