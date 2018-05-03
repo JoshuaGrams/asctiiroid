@@ -225,6 +225,7 @@ local function new(char, hx, hy, dir, color, acceleration)
 		s = 'accelerate',
 		d = 'fire',
 		e = 'use',
+		q = 'use',
 		space = 'wait'
 	}
 	return setmetatable(p, class)
