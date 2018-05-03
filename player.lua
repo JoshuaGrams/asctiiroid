@@ -95,7 +95,8 @@ end
 
 local function collide(self, other, t)
 	if instanceOf(other, Upgrade) then
-		if self.controls.use then
+		if self.controls.use and other ~= self.used then
+			self.used = other
 			for k,v in pairs(other.properties) do
 				if k == 'depth' then
 					local d = math.max(1, math.min(#levels, depth + v))
