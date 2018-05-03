@@ -34,6 +34,24 @@ return {
 		}
 	},
 	{
+		tiles = 1800,
+		chances = {
+			directions = { 8, 2, 2, 0, 0, 1 },
+			rooms = { hex5 = 5, hex4 = 4 },
+			branch = 0.05
+		},
+		contents = {
+			{ 'upgrade', 'down', n=1 },
+			{ 'upgrade', 'money', min=3, max=7 },
+			{ 'upgrade', 'crystal', n=1 },
+			{ 'turret', 15, n=2 },
+			{ 'jelly', n=3 }
+		},
+		background = {
+			{0.06, 0.06, 0.06}, {0.07, 0.06, 0.05}, {0.04, 0.04, 0.04}
+		}
+	},
+	{
 		tiles = 1200,
 		chances = {
 			directions = { 8, 5, 4, 0, 3, 3 },
