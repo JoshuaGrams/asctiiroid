@@ -91,15 +91,16 @@ local function createWalls(G, W)
 			local item
 			local t = math.random(#floorTiles)
 			local tile = table.remove(floorTiles, t)
+			local hx, hy = unpack(tile)
 			if itemType[1] == 'upgrade' then
 				item = Upgrade.new(itemType[2], unpack(tile))
 				if itemType[2] == 'down' then
 					destination = tile
 				end
 			elseif itemType[1] == 'turret' then
-				item = Turret.new(unpack(tile))
+				item = Turret.new(hx, hy, unpack(itemType, 2))
 			elseif itemType[1] == 'jelly' then
-				item = Jelly.new(unpack(tile))
+				item = Jelly.new(hx, hy, unpack(itemType, 2))
 			end
 
 			-- We have to do the random generation (to use the
