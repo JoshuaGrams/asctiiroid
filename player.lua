@@ -154,7 +154,13 @@ local function drawUI(self, x, y, w)
 	love.graphics.setColor(0, 0, 0, 0.59)
 	love.graphics.rectangle('fill', x, y, w, 64)
 
-	x, y = x + 16, y + 16
+	local x, y = x + 16, y + 16
+	local spacing = 32
+
+	local str = 'Lvl ' .. depth
+	love.graphics.setColor(self.color)
+	love.graphics.print(str, x, y)
+	x = x + f:getWidth(str) + spacing
 
 	local str = 'boost:'
 	for i=1,10 do
@@ -166,26 +172,26 @@ local function drawUI(self, x, y, w)
 	end
 	love.graphics.setColor(self.color)
 	love.graphics.print(str, x, y)
-	x = x + f:getWidth(str) + 64
+	x = x + f:getWidth(str) + spacing
 
 	local b = Bullet.types[self.bulletType]
 	local str = 'shots (' .. self.bulletType ..'): '
 	for i=1,self.ammo do str = str .. '*' end
 	love.graphics.setColor(b.color)
 	love.graphics.print(str, x, y)
-	x = x + f:getWidth(str) + 64
+	x = x + f:getWidth(str) + spacing
 
 
 	if self.shield then
 		str = self.shield .. ' shield'
 		love.graphics.setColor(self.color)
 		love.graphics.print(str, x, y)
-		x = x + f:getWidth(str) + 64
+		x = x + f:getWidth(str) + spacing
 	end
 
 	str = '$' .. tostring(self.money)
 	love.graphics.print(str, x, y)
-	x = f:getWidth(str) + 64
+	x = f:getWidth(str) + spacing
 
 	love.graphics.setFont(old)
 end
