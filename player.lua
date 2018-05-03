@@ -107,7 +107,7 @@ local function collide(self, other, t)
 						return
 					end
 				elseif k == 'money' then
-					self.money = self.money + 1
+					self.money = self.money + v
 				else
 					self[k] = v
 				end

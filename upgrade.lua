@@ -9,7 +9,7 @@ local upgradeTypes = {
 	bounce = { ch = 'B', properties = {shield='bounce'} },
 	up = { ch = '<', properties = {depth=-1} },
 	down = { ch = '>', properties = {depth=1} },
-	money = { ch = '$', properties = {money=1} }
+	money = { ch = '$', properties = {money=100} }
 }
 
 local methods = {}
