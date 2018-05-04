@@ -151,6 +151,7 @@ function generateLevel(newPlayer)
 		player.controls = {}
 	end
 	actorCollision(grid, world, player, 0.7*grid.a)
+	camera.cx, camera.cy = grid:toPixel(player.hx, player.hy)
 
 	for i,actor in ipairs(newActors) do
 		world:add(actor)
@@ -211,8 +212,13 @@ function love.draw()
 
 	-- Reset transform and draw UI
 	love.graphics.origin()
-	local w = love.graphics.getWidth()
+	local w, h = love.graphics.getDimensions()
 	player:drawUI(0, 0, w)
+
+	if player.dead then
+		love.graphics.setColor(0.3, 0, 0, 0.5)
+		love.graphics.rectangle('fill', 0, 0, w, h)
+	end
 end
 
 local function scaleBounds(b, s)
@@ -227,13 +233,12 @@ local function scaleBounds(b, s)
 end
 
 function love.update(dt)
-	local b = scaleBounds(camera.bounds, 0)
+	if player.dead then
+		player.dead = math.max(0, player.dead - dt)
+		return
+	end
 	local px, py = grid:toPixel(player.hx, player.hy)
-	local dx, dy = 0, 0  -- Camera motion to put player in bounds.
-	if px < b.xMin then  dx = px - b.xMin
-	elseif px > b.xMax then  dx = px - b.xMax  end
-	if py < b.yMin then  dy = py - b.yMin
-	elseif py > b.yMax then  dy = py - b.yMax  end
+	local dx, dy = px - camera.cx, py - camera.cy
 
 	if dx*dx + dy*dy > 1 then  -- More than 1 pixel out of bounds?
 		local cf, ct = 0.95, 0.9  -- Converge to 95% in 0.9 seconds.
@@ -245,19 +250,19 @@ function love.update(dt)
 end
 
 local function nextTurn()
-	local d = depth
+	local oldDepth = depth
 	newActors = {}
 
 	local collisions = world:collisions()
 	for _,c in ipairs(collisions) do
 		if c.a.collide then c.a:collide(c.b, c.t) end
 		if c.b.collide then c.b:collide(c.a, c.t) end
-		if d ~= depth then return end
+		if depth ~= oldDepth then return end
 	end
 
 	for _,actor in pairs(world.objects) do
 		actor:update(grid)
-		if d ~= depth then return end
+		if depth ~= oldDepth then return end
 	end
 
 	for i,actor in ipairs(newActors) do
@@ -269,6 +274,13 @@ end
 function love.keypressed(k, s)
 	if k == 'escape' then
 		love.event.quit()
+	elseif player.dead then
+		if player.dead == 0 then
+			player.dead = nil
+			depth = 1
+			level = levels[depth]
+			generateLevel(level, true)
+		end
 	else
 		if player:keypressed(k, s) then nextTurn() end
 	end

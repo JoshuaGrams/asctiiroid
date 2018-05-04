@@ -92,9 +92,7 @@ end
 
 local function die(self)
 	self.controls = {}
-	depth, level = 1, levels[1]
-	generateLevel(level, true)
-	return false
+	self.dead = 0.6
 end
 
 local function collide(self, other, t)
@@ -142,7 +140,9 @@ local function collisionResponse(self)
 				self.collider.e = 0.1
 				return true
 			else
-				return die(self)
+				die(self)
+				self.collider.e = 0
+				return true
 			end
 		end
 	end
