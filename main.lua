@@ -195,7 +195,6 @@ end
 function love.draw()
 	camera:use()
 
-	love.graphics.setColor(0.06, 0.06, 0.06)
 	grid:forCellsIn(camera.bounds, triColorHex)
 
 	local actors = {}
@@ -228,7 +227,7 @@ local function scaleBounds(b, s)
 end
 
 function love.update(dt)
-	local b = scaleBounds(camera.bounds, 0.125)
+	local b = scaleBounds(camera.bounds, 0)
 	local px, py = grid:toPixel(player.hx, player.hy)
 	local dx, dy = 0, 0  -- Camera motion to put player in bounds.
 	if px < b.xMin then  dx = px - b.xMin
