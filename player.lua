@@ -91,6 +91,7 @@ local function update(self, G)
 end
 
 local function die(self)
+	self.controls = {}
 	depth, level = 1, levels[1]
 	generateLevel(level, true)
 	return false
