@@ -36,6 +36,28 @@ local function keypressed(self, k, s)
 	return false
 end
 
+local function fire(self, G)
+	local dirs = G.dirs
+	local angles = (self.shot == 'multi') and {0,-1,1} or {0}
+	for _,angle in ipairs(angles) do
+		if self.ammo > 0 then
+			self.ammo = self.ammo - 1
+			local b = Bullet.new(self, self.bulletType)
+			local d = (self.dir + angle) % 6
+			local ox = (dirs[1+d][1] + dirs[1+self.dir][1])/2
+			local oy = (dirs[1+d][2] + dirs[1+self.dir][2])/2
+			b.hx, b.hy = self.hx + 0.75*ox, self.hy + 0.75*oy
+			b.vx, b.vy = b.vx + ox/4, b.vy + oy/4
+			if self.shot == 'multi' then
+				-- short range
+				b.turns = math.ceil(b.turns/2.5)
+			end
+			local c = b.collider
+			c.vx, c.vy = G:toPixel(b.vx, b.vy)
+		end
+	end
+end
+
 local function update(self, G)
 	if self.controls.accelerate then
 		local a = self.controls.accelerate
@@ -59,26 +81,7 @@ local function update(self, G)
 	end
 
 	if self.controls.fire then
-		local a = (self.shot == 'multi') and {0,-1,1} or {0}
-		for _,i in ipairs(a) do
-			if self.ammo > 0 then
-				local b
-				local dir = (self.dir + i) % 6
-				self.ammo = self.ammo - 1
-				b = Bullet.new(self, self.bulletType)
-				local d = grid.dirs
-				local ox = (d[1+dir][1] + d[1+self.dir][1])/2
-				local oy = (d[1+dir][2] + d[1+self.dir][2])/2
-				b.hx, b.hy = self.hx + 0.75*ox, self.hy + 0.75*oy
-				b.vx, b.vy = b.vx + ox/4, b.vy + oy/4
-				if self.shot == 'multi' then
-					-- short range
-					b.turns = math.ceil(b.turns/3)
-				end
-				local c = b.collider
-				c.vx, c.vy = grid:toPixel(b.vx, b.vy)
-			end
-		end
+		fire(self, G)
 		self.controls.fire = false
 	end
 
