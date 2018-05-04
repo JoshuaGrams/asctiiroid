@@ -75,6 +75,8 @@ local function update(self, G)
 		self.controls.accelerate = false
 	end
 
+	parent.methods.update(self, G)
+
 	if self.controls.dir then
 		self.dir = self.controls.dir
 		self.controls.dir = false
@@ -84,8 +86,6 @@ local function update(self, G)
 		fire(self, G)
 		self.controls.fire = false
 	end
-
-	parent.methods.update(self, G)
 
 	self.controls.use = nil
 end
