@@ -10,6 +10,7 @@ return {
 		contents = {
 			{ 'upgrade', 'down', n=1 },
 			{ 'upgrade', 'money', min=2, max=5 },
+			{ 'upgrade', 'boost', min=1, max=3 },
 			{ 'jelly', n=1 }
 		},
 		background = {
