@@ -92,7 +92,9 @@ end
 
 local function die(self)
 	self.controls = {}
-	self.dead = 0.6
+	self.dead = true
+	self.deadWait = 0.6
+	state = 'menu'
 end
 
 local function collide(self, other, t)

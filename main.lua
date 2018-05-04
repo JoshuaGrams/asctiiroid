@@ -11,6 +11,16 @@ Rock = { class = { __index = setmetatable({}, Actor.class) }}  -- for collision 
 rooms = require 'rooms'
 levels = require 'levels'
 
+local function separateThousands(n)
+	local first, last = '', ''
+	if n < 0 then n, first = -n, '-' end
+	while n >= 1000 do
+		last = string.format(",%03d", n % 1000) .. last
+		n = math.floor(n / 1000)
+	end
+	return first .. tostring(n) .. last
+end
+
 local function drawChar(g, ch, hx, hy, dir)
 	local px, py = g:toPixel(hx, hy)
 	dir = dir or 0
@@ -138,7 +148,7 @@ function generateLevel(newPlayer)
 	grid:generate(level.origin, level.tiles, rooms, level.chances, level.seed)
 	local origin, dest = createWalls(grid, world)
 	if levels[depth+1] then
-		levels[depth+1].seed = math.random() * 1000000
+		levels[depth+1].seed = math.floor(math.random() * 1e6)
 		levels[depth+1].origin = {x=dest[1], y=dest[2]}
 	end
 
@@ -159,7 +169,25 @@ function generateLevel(newPlayer)
 	end
 end
 
-function love.load()
+local function newGame()
+	depth = 1
+	level = levels[depth]
+	generateLevel(level, true)
+end
+
+function love.load(args)
+	for _,arg in ipairs(args) do
+		local n = tonumber(arg)
+		if n then levels[1].seed = math.floor(n) end
+	end
+	state = 'menu'
+	options = {
+		'New Game',
+		'Continue Game',
+		'Restart',
+		'Exit',
+		selected = 2
+	}
 	camera = Camera.new(0, 0)
 
 	font = love.graphics.newFont('RobotoMono-Regular.ttf', 36)
@@ -174,9 +202,7 @@ function love.load()
 	world = Collision.new(3*grid.a)
 	newActors = {}
 
-	depth = 1
-	level = levels[depth]
-	generateLevel(level, true)
+	newGame()
 end
 
 local function triColorHex(g, col, row)
@@ -190,6 +216,80 @@ local function triColorHex(g, col, row)
 	elseif a == nil then
 		rock.hx, rock.hy = col, row
 		rock:draw(g, xc, yc)
+	end
+end
+
+local function highlightOption(x, y, w, h)
+	local oldColor = {love.graphics.getColor()}
+	love.graphics.setColor(0.6, 0.6, 0.3)
+
+	local triangle = { 0, 0, -19, -11, -19, 11 }
+
+	love.graphics.push()
+	love.graphics.translate(x - 5, y + 0.5 * h)
+	love.graphics.polygon('fill', triangle)
+	love.graphics.pop()
+
+	love.graphics.push()
+	love.graphics.translate(x + w + 5, y + 0.5 * h)
+	love.graphics.rotate(math.pi)
+	love.graphics.polygon('fill', triangle)
+	love.graphics.pop()
+
+	love.graphics.setColor(oldColor)
+end
+
+local function menuSelect()
+	player.dead = nil
+	local option = options[options.selected]
+	if option == 'New Game' then
+		levels[1].seed = nil
+		newGame()
+		state = 'play'
+	elseif option == 'Continue Game' then
+		state = 'play'
+	elseif option == 'Restart' then
+		newGame()
+		state = 'play'
+	elseif option == 'Exit' then
+		love.event.quit()
+	end
+end
+
+local function drawMenu(w, h)
+	-- Fade game.
+	if player.dead then
+		love.graphics.setColor(0.3, 0, 0, 0.5)
+		if options.selected == 2 then options.selected = 1 end
+	else
+		love.graphics.setColor(0.1, 0.1, 0.1, 0.9)
+	end
+	love.graphics.rectangle('fill', 0, 0, w, h)
+
+	love.graphics.setFont(font)
+	love.graphics.setColor(0.5, 0.8, 0.35)
+	local name = 'The Asctiiroid'
+	local x = 0.5 * (w - font:getWidth(name))
+	love.graphics.print(name, x, 50)
+
+	local lineHeight = font:getHeight() * font:getLineHeight()
+	local y = 0.5 * (h - #options * lineHeight)
+	for i,option in ipairs(options) do
+		if option == 'Restart' then
+			option = option .. ' #' .. separateThousands(levels[1].seed)
+		end
+		local optionWidth = font:getWidth(option)
+		local x = 0.5 * (w - optionWidth)
+		if i == options.selected then
+			highlightOption(x, y, optionWidth, lineHeight)
+		end
+		if player.dead and i == 2 then
+			love.graphics.setColor(0.15, 0.15, 0.25)
+		else
+			love.graphics.setColor(0.3, 0.3, 0.5)
+		end
+		love.graphics.print(option, x, y)
+		y = y + lineHeight
 	end
 end
 
@@ -215,9 +315,8 @@ function love.draw()
 	local w, h = love.graphics.getDimensions()
 	player:drawUI(0, 0, w)
 
-	if player.dead then
-		love.graphics.setColor(0.3, 0, 0, 0.5)
-		love.graphics.rectangle('fill', 0, 0, w, h)
+	if state == 'menu' then
+		drawMenu(w, h)
 	end
 end
 
@@ -233,9 +332,13 @@ local function scaleBounds(b, s)
 end
 
 function love.update(dt)
-	if player.dead then
-		player.dead = math.max(0, player.dead - dt)
-		return
+	if player.deadWait then
+		player.deadWait = player.deadWait - dt
+		if player.deadWait <= 0 then
+			player.deadWait = nil
+		else
+			return
+		end
 	end
 	local px, py = grid:toPixel(player.hx, player.hy)
 	local dx, dy = px - camera.cx, py - camera.cy
@@ -272,16 +375,27 @@ local function nextTurn()
 end
 
 function love.keypressed(k, s)
-	if k == 'escape' then
-		love.event.quit()
-	elseif player.dead then
-		if player.dead == 0 then
-			player.dead = nil
-			depth = 1
-			level = levels[depth]
-			generateLevel(level, true)
+	if state == 'menu' and not player.deadWait then
+		if k == 'down' or s == 'k' then
+			options.selected = 1 + options.selected % #options
+			if player.dead and options.selected == 2 then
+				options.selected = 3
+			end
+		elseif k == 'up' or s == 'i' then
+			options.selected = 1 + (options.selected - 2) % #options
+			if player.dead and options.selected == 2 then
+				options.selected = 1
+			end
+		elseif k == 'return' or k == 'space' then
+			menuSelect()
+		elseif k == 'escape' then
+			love.event.quit()
 		end
-	else
-		if player:keypressed(k, s) then nextTurn() end
+	elseif state == 'play' then
+		if k == 'escape' then
+			state = 'menu'
+		elseif player:keypressed(k, s) then
+			nextTurn()
+		end
 	end
 end
