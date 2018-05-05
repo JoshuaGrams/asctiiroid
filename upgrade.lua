@@ -1,3 +1,5 @@
+local Colors = require 'colors'
+
 local parent = require 'actor'
 
 local upgradeTypes = {
@@ -17,11 +19,11 @@ local class = { __index = setmetatable(methods, parent.class) }
 
 local function new(kind, hx, hy)
 	local u = upgradeTypes[kind]
-	local color = {0.08, 0.47, 0.08}
+	local color = Colors.upgrade
 	if kind == 'food' then
-		color = {0.92, 0.41, 0.06}
+		color = Colors.food
 	elseif kind == 'up' or kind == 'down' then
-		color = {0.47, 0.47, 0.47}
+		color = Colors.stairs
 	end
 	local self = parent.new(u.ch, hx, hy, 4, color)
 	self.properties = u.properties
