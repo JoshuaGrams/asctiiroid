@@ -17,7 +17,7 @@ intro = {
 	"new hydroponics systems come online, you enter the deadly",
 	"asteroid Endor in search of a legendary root vegetable..."
 }
-endings = require 'endings'
+endings = require 'story'
 
 
 local function separateThousands(n)
