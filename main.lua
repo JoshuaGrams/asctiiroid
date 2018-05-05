@@ -66,6 +66,7 @@ local yam = {
 }
 
 local function addYam(G, W)
+	-- Find farthest cell from entrance.
 	local dist2, cx, cy = 0
 	G:forCells(function(g, cell, x, y)
 		local dx = x - level.origin.x
@@ -77,10 +78,16 @@ local function addYam(G, W)
 		end
 	end)
 
+	actors.yam = {}
+	local cache = actors.yam
+
 	for _,offset in ipairs(yam) do
 		local tx, ty = cx + offset[1], cy + offset[2]
-		Upgrade.new('food', tx, ty)
+		local f = Upgrade.new('food', tx, ty)
+		table.insert(cache, f)
+		f.spawn, f.spawnIndex = cache, #cache
 	end
+	cache.n = #cache
 end
 
 local function createWalls(G, W)
