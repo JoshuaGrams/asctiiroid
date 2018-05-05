@@ -1,6 +1,7 @@
 local parent = require 'actor'
 local Bullet = require 'bullet'
 local Jelly = require 'jelly'
+local Shake = require 'shake'
 local Turret = require 'turret'
 local Upgrade = require 'upgrade'
 
@@ -129,6 +130,10 @@ local function collide(self, other, t)
 	end
 end
 
+local function hitShake()
+	shake = Shake.new(10, 0.005, 1.1, 13)
+end
+
 local function collisionResponse(self)
 	local other = self.collider.other
 	if other then
@@ -139,14 +144,17 @@ local function collisionResponse(self)
 		if bullet or jelly or turret or rock then
 			if rock and self.shield == 'bounce' then
 				self.collider.e = 0.7
+				hitShake()
 				return true
 			elseif self.shield == 'crystal' then
 				self.shield = nil
 				self.collider.e = 0.1
+				hitShake()
 				return true
 			else
 				die(self)
 				self.collider.e = 0
+				hitShake()
 				return true
 			end
 		end

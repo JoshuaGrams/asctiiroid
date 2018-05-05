@@ -420,6 +420,8 @@ function love.update(dt)
 	end
 	camera.cx = camera.cx + dx
 	camera.cy = camera.cy + dy
+	camera.angle = 0
+	if shake then shake:update(dt, camera) end
 end
 
 local function nextTurn()
