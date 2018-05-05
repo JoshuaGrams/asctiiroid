@@ -11,6 +11,15 @@ Rock = { class = { __index = setmetatable({}, Actor.class) }}  -- for collision 
 rooms = require 'rooms'
 levels = require 'levels'
 
+intro = {
+	"In the wake of an asteroid strike, food supplies are",
+	"running low.  Desperate to tide the colony over until the",
+	"new hydroponics systems come online, you enter the deadly",
+	"asteroid Endor in search of a legendary root vegetable..."
+}
+endings = require 'endings'
+
+
 local function separateThousands(n)
 	local first, last = '', ''
 	if n < 0 then n, first = -n, '-' end
@@ -77,15 +86,14 @@ local function createWalls(G, W)
 	end
 
 	-- Add stairs up
-	if depth > 1 then
-		Upgrade.new('up', unpack(floorTiles[origin]))
-	end
+	Upgrade.new('up', unpack(floorTiles[origin]))
 	origin = table.remove(floorTiles, origin)
 
 	-- Add items and enemies
 	local destination
 	for _,itemType in ipairs(level.contents) do
-		if not itemType.actors then itemType.actors = {} end
+		if not actors[itemType] then actors[itemType] = {} end
+		local cachedActors = actors[itemType]
 		local n = itemType.n
 		if n then
 			if n < 1 then
@@ -96,7 +104,7 @@ local function createWalls(G, W)
 		else
 			n = math.random(itemType.min, itemType.max)
 		end
-		if not itemType.actors.n then itemType.actors.n = n end
+		if not cachedActors.n then cachedActors.n = n end
 		for i=1,n do
 			local item
 			local t = math.random(#floorTiles)
@@ -116,7 +124,7 @@ local function createWalls(G, W)
 			-- We have to do the random generation (to use the
 			-- same random numbers in the same place every
 			-- time) but we want to remove dead/used items.
-			if itemType.actors[i] == false then
+			if cachedActors[i] == false then
 				if instanceOf(item, Upgrade) then
 					grid:set(item.hx, item.hy, false)
 					world:remove(item, true)
@@ -124,8 +132,8 @@ local function createWalls(G, W)
 					table.remove(newActors)
 				end
 			else
-				itemType.actors[i] = item
-				item.spawn = itemType.actors
+				cachedActors[i] = item
+				item.spawn = cachedActors
 				item.spawnIndex = i
 			end
 		end
@@ -175,12 +183,19 @@ local function newGame()
 	generateLevel(level, true)
 end
 
+function endGame()
+	timeout = 0.6
+	state = 'ending'
+	gameOver = true
+end
+
 function love.load(args)
 	for _,arg in ipairs(args) do
 		local n = tonumber(arg)
 		if n then levels[1].seed = math.floor(n) end
 	end
-	state = 'menu'
+
+	state = 'intro'
 	options = {
 		'New Game',
 		'Continue Game',
@@ -188,6 +203,8 @@ function love.load(args)
 		'Exit',
 		selected = 2
 	}
+	actors = {}
+
 	camera = Camera.new(0, 0)
 
 	font = love.graphics.newFont('RobotoMono-Regular.ttf', 36)
@@ -240,15 +257,17 @@ local function highlightOption(x, y, w, h)
 end
 
 local function menuSelect()
-	player.dead = nil
+	gameOver = nil
 	local option = options[options.selected]
 	if option == 'New Game' then
 		levels[1].seed = nil
+		actors = {}
 		newGame()
 		state = 'play'
 	elseif option == 'Continue Game' then
 		state = 'play'
 	elseif option == 'Restart' then
+		actors = {}
 		newGame()
 		state = 'play'
 	elseif option == 'Exit' then
@@ -258,20 +277,18 @@ end
 
 local function drawMenu(w, h)
 	-- Fade game.
-	if player.dead then
-		love.graphics.setColor(0.3, 0, 0, 0.5)
-		if options.selected == 2 then options.selected = 1 end
-	else
-		love.graphics.setColor(0.1, 0.1, 0.1, 0.9)
-	end
+	love.graphics.setColor(0.1, 0.1, 0.1, 0.9)
 	love.graphics.rectangle('fill', 0, 0, w, h)
 
 	love.graphics.setFont(font)
 	love.graphics.setColor(0.5, 0.8, 0.35)
-	local name = 'The Asctiiroid'
+	local name = 'The Yam of Endor'
 	local x = 0.5 * (w - font:getWidth(name))
 	love.graphics.print(name, x, 50)
 
+	if gameOver and options.selected == 2 then
+		options.selected = 1
+	end
 	local lineHeight = font:getHeight() * font:getLineHeight()
 	local y = 0.5 * (h - #options * lineHeight)
 	for i,option in ipairs(options) do
@@ -283,7 +300,7 @@ local function drawMenu(w, h)
 		if i == options.selected then
 			highlightOption(x, y, optionWidth, lineHeight)
 		end
-		if player.dead and i == 2 then
+		if gameOver and i == 2 then
 			love.graphics.setColor(0.15, 0.15, 0.25)
 		else
 			love.graphics.setColor(0.3, 0.3, 0.5)
@@ -293,7 +310,53 @@ local function drawMenu(w, h)
 	end
 end
 
+function replaceValues(line, values)
+	return string.gsub(line, "%%(%a+)", values or {})
+end
+
+function drawText(template, values, bg)
+	local oldFont = love.graphics.getFont()
+	local w, h = love.graphics.getDimensions()
+	if bg then
+		love.graphics.setColor(bg)
+		love.graphics.rectangle('fill', 0, 0, w, h)
+	else
+		love.graphics.setBackgroundColor({0.02, 0.02, 0.05})
+	end
+	love.graphics.setColor(0.65, 0.65, 0.25)
+	local f = uiFont
+	love.graphics.setFont(f)
+	local lineHeight = f:getHeight() * f:getLineHeight()
+	local y = 0.5 * (h - #intro * lineHeight)
+	local x = 0.5 * w
+	local lines = {}
+	for _,line in ipairs(template) do
+		line = replaceValues(line, values)
+		table.insert(lines, line)
+		x = math.min(x, 0.5 * (w - f:getWidth(line)))
+	end
+
+	for _,line in ipairs(lines) do
+		love.graphics.print(line, x, y)
+		y = y + lineHeight
+	end
+
+	love.graphics.setFont(oldFont)
+end
+
+local function colonistDeaths(food)
+	local loFood, hiFood = endings[3].food, endings[4].food
+	local loFoodDeaths, hiFoodDeaths = 300, 50
+	local fraction = (food - loFood) / (hiFood - loFood)
+	return math.ceil(loFoodDeaths + fraction * (hiFoodDeaths - loFoodDeaths))
+end
+
 function love.draw()
+	if state == 'intro' then
+		drawText(intro)
+		return
+	end
+
 	camera:use()
 
 	grid:forCellsIn(camera.bounds, triColorHex)
@@ -317,6 +380,17 @@ function love.draw()
 
 	if state == 'menu' then
 		drawMenu(w, h)
+	elseif state == 'ending' then
+		local ending, values
+		for _,e in ipairs(endings) do
+			if player.food < e.food then break end
+			ending = e
+			values = {
+				food = player.food,
+				n = colonistDeaths(player.food)
+			}
+		end
+		drawText(ending, values, {0.02, 0.02, 0.05, 0.8})
 	end
 end
 
@@ -332,13 +406,9 @@ local function scaleBounds(b, s)
 end
 
 function love.update(dt)
-	if player.deadWait then
-		player.deadWait = player.deadWait - dt
-		if player.deadWait <= 0 then
-			player.deadWait = nil
-		else
-			return
-		end
+	if timeout then
+		timeout = timeout - dt
+		if timeout <= 0 then timeout = nil end
 	end
 	local px, py = grid:toPixel(player.hx, player.hy)
 	local dx, dy = px - camera.cx, py - camera.cy
@@ -375,15 +445,19 @@ local function nextTurn()
 end
 
 function love.keypressed(k, s)
-	if state == 'menu' and not player.deadWait then
+	if state == 'intro' then
+		state = 'menu'
+	elseif state == 'ending' and not timeout then
+		state = 'menu'
+	elseif state == 'menu' and not timeout then
 		if k == 'down' or s == 'k' then
 			options.selected = 1 + options.selected % #options
-			if player.dead and options.selected == 2 then
+			if gameOver and options.selected == 2 then
 				options.selected = 3
 			end
 		elseif k == 'up' or s == 'i' then
 			options.selected = 1 + (options.selected - 2) % #options
-			if player.dead and options.selected == 2 then
+			if gameOver and options.selected == 2 then
 				options.selected = 1
 			end
 		elseif k == 'return' or k == 'space' then

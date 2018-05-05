@@ -92,9 +92,8 @@ end
 
 local function die(self)
 	self.controls = {}
-	self.dead = true
-	self.deadWait = 0.6
-	state = 'menu'
+	self.food = -1
+	endGame()
 end
 
 local function collide(self, other, t)
@@ -103,15 +102,19 @@ local function collide(self, other, t)
 			self.used = other
 			for k,v in pairs(other.properties) do
 				if k == 'depth' then
-					local d = math.max(1, math.min(#levels, depth + v))
+					local d = math.max(0, math.min(#levels, depth + v))
 					if d ~= depth then
+						if d == 0 then
+							d = depth
+							endGame()
+						end
 						self.hx, self.hy = other.hx, other.hy
 						depth, level = d, levels[d]
 						generateLevel()
 						return
 					end
-				elseif k == 'money' then
-					self.money = self.money + v
+				elseif k == 'food' then
+					self.food = self.food + v
 				else
 					self[k] = v
 				end
@@ -163,14 +166,14 @@ local function drawUI(self, x, y, w)
 	local x, y = x + 16, y + 16
 	local spacing = 32
 
-	local str = 'Lvl ' .. depth
+	local str = 'L' .. depth
 	love.graphics.setColor(self.color)
 	love.graphics.print(str, x, y)
 	x = x + f:getWidth(str) + spacing
 
 	local str = 'boost:'
-	for i=1,10 do
-		if i > self.boost then
+	for i=1,5 do
+		if i > math.ceil(0.5 * self.boost) then
 			str = str .. '-'
 		else
 			str = str .. '#'
@@ -195,7 +198,7 @@ local function drawUI(self, x, y, w)
 		x = x + f:getWidth(str) + spacing
 	end
 
-	str = '$' .. tostring(self.money)
+	str = 'food: ' .. tostring(self.food)
 	love.graphics.print(str, x, y)
 	x = f:getWidth(str) + spacing
 
@@ -217,7 +220,7 @@ local function new(char, hx, hy, dir, color, acceleration)
 	p.ammo = 3
 	p.controls = {}
 	p.boost = 0
-	p.money = 0
+	p.food = 0
 	p.bulletType = 'energy'
 	p.scancodes = {
 		u = 'upleft',

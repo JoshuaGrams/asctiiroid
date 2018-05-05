@@ -9,7 +9,7 @@ return {
 		},
 		contents = {
 			{ 'upgrade', 'down', n=1 },
-			{ 'upgrade', 'money', min=2, max=5 },
+			{ 'upgrade', 'food', min=2, max=5 },
 			{ 'upgrade', 'boost', min=1, max=3 },
 			{ 'jelly', n=1 }
 		},
@@ -26,7 +26,7 @@ return {
 		},
 		contents = {
 			{ 'upgrade', 'down', n=1 },
-			{ 'upgrade', 'money', min=4, max=7 },
+			{ 'upgrade', 'food', min=4, max=7 },
 			{ 'upgrade', 'crystal', n=1 },
 			{ 'turret', 15, n=2 }
 		},
@@ -43,7 +43,7 @@ return {
 		},
 		contents = {
 			{ 'upgrade', 'down', n=1 },
-			{ 'upgrade', 'money', min=3, max=7 },
+			{ 'upgrade', 'food', min=3, max=7 },
 			{ 'upgrade', 'crystal', n=1 },
 			{ 'turret', 15, n=2 },
 			{ 'jelly', n=3 }
@@ -60,8 +60,8 @@ return {
 			branch = 0.007
 		},
 		contents = {
+			{ 'upgrade', 'food', min=2, max=7 },
 			{ 'upgrade', 'down', n=1 },
-			{ 'upgrade', 'money', min=3, max=6 },
 			{ 'upgrade', 'boost', min=1, max=3 },
 			{ 'upgrade', 'bounce', n=0.5 },
 			{ 'upgrade', 'multi', n=1 },
@@ -80,7 +80,7 @@ return {
 			branch = 0.01
 		},
 		contents = {
-			{ 'upgrade', 'money', min=2, max=7 },
+			{ 'upgrade', 'food', min=36, max=50 },
 			{ 'upgrade', 'boost', min=1, max=3 },
 			{ 'upgrade', 'crystal', min=0, max=1 },
 			{ 'upgrade', 'reflect', n=1 },

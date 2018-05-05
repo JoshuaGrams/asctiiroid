@@ -9,7 +9,7 @@ local upgradeTypes = {
 	bounce = { ch = 'B', properties = {shield='bounce'} },
 	up = { ch = '<', properties = {depth=-1} },
 	down = { ch = '>', properties = {depth=1} },
-	money = { ch = '$', properties = {money=100} }
+	food = { ch = '&', properties = {food=50} }
 }
 
 local methods = {}
@@ -18,8 +18,8 @@ local class = { __index = setmetatable(methods, parent.class) }
 local function new(kind, hx, hy)
 	local u = upgradeTypes[kind]
 	local color = {0.08, 0.47, 0.08}
-	if kind == 'money' then
-		color = {0.71, 0.71, 0.12}
+	if kind == 'food' then
+		color = {0.92, 0.41, 0.06}
 	elseif kind == 'up' or kind == 'down' then
 		color = {0.47, 0.47, 0.47}
 	end
