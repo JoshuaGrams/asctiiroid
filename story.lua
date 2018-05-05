@@ -1,8 +1,8 @@
 
 local intro = {
 	"In the wake of an asteroid strike, food supplies are",
-	"running low.  Desperate to tide the colony over until the",
-	"new hydroponics systems come online, you enter the deadly",
+	"running low.  Desperate to feed the colony until the new",
+	"hydroponics systems come online, you enter the deadly",
 	"asteroid Endor in search of a legendary root vegetable..."
 }
 
@@ -21,7 +21,7 @@ local endings = {
 		food = 300,
 		"Though you found the Yam of Endor, you only managed to bring",
 		"back a paltry %food pounds of it.  So despite your desperate",
-		"adventure, %n people died, and the rest are quite emaciated."
+		"venture, %n people died, and the rest are quite emaciated."
 	},
 	{
 		food = 700,
