@@ -1,23 +1,56 @@
-The Asctiiroid
-==============
+The Yam of Endor
+================
 
-This is an attempt at a turn-based hex-grid cave-flyer for
-2018's 7-day roguelike challenge.
+A small turn-based Roguelike space game.  Collect food and then
+return to the surface to feed a starving space colony.
+
+![screenshot](asctiiroid.jpg)
 
 Keys (I've used scancodes, so hopefully these are in the QWERTY
 positions even if you're using a different keyboard layout):
 
-* UIO/JKL (right hand) - Aim your ship (uses a turn).
-* D - Accelerate (uses a turn).
-* S or F - Fire a shot, if you have ammo.
-* E - Boost (higher acceleration if you have fuel: uses a turn).
-* W or R - Use an exit or grab an upgrade.
+* UIO/JKL (right hand) - Aim your ship.
+* D - Accelerate.
+* F (or S) - Fire a shot, if you have ammo.
+* E - Boost (higher acceleration if you have fuel).
+* R (or W) - Use an exit or grab an upgrade.
 * Space - Wait for one turn (drift at the current velocity).
 
 I've used the Asteroids mechanic where you have a limited number
-of active bullets.
+of active bullets (3 in this case).
 
-![screenshot](asctiiroid.jpg)
+Enemies
+-------
+
+* `O`, `o` (purple): acid jellies.  Hurt you if you touch them.
+  When damaged, large ones split into two small ones.
+
+* `>` (red): turrets.  Aim at you and shoot every so many turns.
+
+Objects
+-------
+
+* `>`, `<`: exits (down and up). Think of these as "forward" and
+  "back".
+
+* `&` (orange): food.  Collect this to feed your starving friends
+  and neighbors.
+
+* `C`: crystal shield.  Absorbs one hit, shattering as it does so.
+
+* `B`: bounce shield.  Allows you to bounce off walls, but
+  provides no protection from enemies.
+
+* `+`: Boost fuel (10 units).
+
+* `w`: Multi-shot.  Fire all three bullets at once.
+  Dramatically shortens your bullets' range.
+
+* `!`: Single-shot.  Restore single shot mode.
+
+* `z`: Bounce-shot.  Bullets bounce off walls.
+
+-----
 
 I've had this idea in the back of my mind for a year or two.  I
 attempted it for a past 7DRL but had an unexpectedly bonkers
