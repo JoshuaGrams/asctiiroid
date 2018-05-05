@@ -80,7 +80,7 @@ return {
 			branch = 0.01
 		},
 		contents = {
-			{ 'upgrade', 'food', min=36, max=50 },
+			-- No food: yam automatically added.
 			{ 'upgrade', 'boost', min=1, max=3 },
 			{ 'upgrade', 'crystal', min=0, max=1 },
 			{ 'upgrade', 'reflect', n=1 },

@@ -56,16 +56,46 @@ local function newRock(G, W, x, y, ch)
 	return rock
 end
 
+local yam = {
+	{0,-1}, {0,0}, {0,1},
+	{1,-2}, {1,-1}, {1,0}, {1,1},
+	{2,-3}, {2,-2}, {2,-1}, {2,0}, {2,1},
+	{3,-3}, {3,-2}, {3,-1}, {3,0}, {3,1},
+	{4,-3}, {4,-2}, {4,-1}, {4,0},
+	{5,-3}, {5,-2}, {5,-1},
+}
+
+local function addYam(G, W)
+	local dist2, cx, cy = 0
+	G:forCells(function(g, cell, x, y)
+		local dx = x - level.origin.x
+		local dy = y - level.origin.y
+		dx, dy = G:toPixel(dx, dy)
+		local d2 = dx * dx + dy * dy
+		if d2 > dist2 then
+			dist2, cx, cy = d2, x, y
+		end
+	end)
+
+	for _,offset in ipairs(yam) do
+		local tx, ty = cx + offset[1], cy + offset[2]
+		Upgrade.new('food', tx, ty)
+	end
+end
+
 local function createWalls(G, W)
+	if depth == #levels then addYam(G, W) end
+
 	local origin
 	-- Get a single list of all floor tiles.
 	local floorTiles = {}
 	G:forCells(function(g, cell, x, y)
+		local tile = {x, y}
+		table.insert(floorTiles, tile)
 		if x == level.origin.x and y == level.origin.y then
-			origin = #floorTiles + 1
+			origin = tile
+			origin.index = #floorTiles
 		end
-
-		table.insert(floorTiles, {x, y})
 	end)
 
 	-- Surround them with rocks.
@@ -80,8 +110,8 @@ local function createWalls(G, W)
 	end
 
 	-- Add stairs up
-	Upgrade.new('up', unpack(floorTiles[origin]))
-	origin = table.remove(floorTiles, origin)
+	Upgrade.new('up', unpack(origin))
+	table.remove(floorTiles, origin.index)
 
 	-- Add items and enemies
 	local destination
