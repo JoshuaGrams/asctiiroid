@@ -11,13 +11,7 @@ Rock = { class = { __index = setmetatable({}, Actor.class) }}  -- for collision 
 rooms = require 'rooms'
 levels = require 'levels'
 
-intro = {
-	"In the wake of an asteroid strike, food supplies are",
-	"running low.  Desperate to tide the colony over until the",
-	"new hydroponics systems come online, you enter the deadly",
-	"asteroid Endor in search of a legendary root vegetable..."
-}
-endings = require 'story'
+story = require 'story'
 
 
 local function separateThousands(n)
@@ -327,7 +321,7 @@ function drawText(template, values, bg)
 	local f = uiFont
 	love.graphics.setFont(f)
 	local lineHeight = f:getHeight() * f:getLineHeight()
-	local y = 0.5 * (h - #intro * lineHeight)
+	local y = 0.5 * (h - #template * lineHeight)
 	local x = 0.5 * w
 	local lines = {}
 	for _,line in ipairs(template) do
@@ -345,6 +339,7 @@ function drawText(template, values, bg)
 end
 
 local function colonistDeaths(food)
+	local endings = story.endings
 	local loFood, hiFood = endings[3].food, endings[4].food
 	local loFoodDeaths, hiFoodDeaths = 300, 50
 	local fraction = (food - loFood) / (hiFood - loFood)
@@ -353,7 +348,7 @@ end
 
 function love.draw()
 	if state == 'intro' then
-		drawText(intro)
+		drawText(story.intro)
 		return
 	end
 
@@ -382,7 +377,7 @@ function love.draw()
 		drawMenu(w, h)
 	elseif state == 'ending' then
 		local ending, values
-		for _,e in ipairs(endings) do
+		for _,e in ipairs(story.endings) do
 			if player.food < e.food then break end
 			ending = e
 			values = {

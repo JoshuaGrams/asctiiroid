@@ -1,4 +1,12 @@
-return {
+
+local intro = {
+	"In the wake of an asteroid strike, food supplies are",
+	"running low.  Desperate to tide the colony over until the",
+	"new hydroponics systems come online, you enter the deadly",
+	"asteroid Endor in search of a legendary root vegetable..."
+}
+
+local endings = {
 	{
 		food = -1,
 		"You died in the depths of Endor, dooming the colony to a",
@@ -28,3 +36,5 @@ return {
 		"all alive and in good health thanks to your daring and skill."
 	}
 }
+
+return { intro = intro, endings = endings }
