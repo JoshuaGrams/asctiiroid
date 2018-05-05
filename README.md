@@ -8,10 +8,10 @@ Keys (I've used scancodes, so hopefully these are in the QWERTY
 positions even if you're using a different keyboard layout):
 
 * UIO/JKL (right hand) - Aim your ship (uses a turn).
-* S - Accelerate (uses a turn).
-* A or D - Fire a shot, if you have ammo.
-* W - Boost (higher acceleration if you have fuel: uses a turn).
-* E - Use an exit or grab an upgrade.
+* D - Accelerate (uses a turn).
+* S or F - Fire a shot, if you have ammo.
+* E - Boost (higher acceleration if you have fuel: uses a turn).
+* W or R - Use an exit or grab an upgrade.
 * Space - Wait for one turn (drift at the current velocity).
 
 I've used the Asteroids mechanic where you have a limited number

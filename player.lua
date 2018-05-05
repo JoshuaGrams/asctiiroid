@@ -229,12 +229,12 @@ local function new(char, hx, hy, dir, color, acceleration)
 		j = 'downleft',
 		k = 'down',
 		l = 'downright',
-		w = 'boost',
-		a = 'fire',
-		s = 'accelerate',
-		d = 'fire',
-		e = 'use',
-		q = 'use',
+		w = 'use',
+		e = 'boost',
+		r = 'use',
+		s = 'fire',
+		d = 'accelerate',
+		f = 'fire',
 		space = 'wait'
 	}
 	return setmetatable(p, class)
