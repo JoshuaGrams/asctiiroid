@@ -1,9 +1,9 @@
 return {
 	{
-		tiles = 700,
+		tiles = 500,
 		origin = { x=0, y=0 },
 		chances = {
-			directions = { 0, 5, 4, 0, 0, 0 },
+			directions = { 2.5, 5, 4, 0, 0, 0 },
 			rooms = { hex5 = 1 },
 			branch = 0
 		},
@@ -11,7 +11,9 @@ return {
 			{ 'upgrade', 'down', n=1 },
 			{ 'upgrade', 'food', min=2, max=5 },
 			{ 'upgrade', 'boost', min=1, max=3 },
-			{ 'jelly', n=1 }
+			{ 'upgrade', 'crystal', n=1 },
+			{ 'upgrade', 'multi', n=2 },
+			{ 'upgrade', 'blast', n=2 }
 		},
 		background = {
 			{0.06, 0.06, 0.06}, {0.07, 0.06, 0.05}, {0.04, 0.04, 0.04}
@@ -27,8 +29,7 @@ return {
 		contents = {
 			{ 'upgrade', 'down', n=1 },
 			{ 'upgrade', 'food', min=4, max=7 },
-			{ 'upgrade', 'crystal', n=1 },
-			{ 'turret', 15, n=2 }
+			{ 'jelly', min=2, max=3 }
 		},
 		background = {
 			{0.06, 0.06, 0.06}, {0.07, 0.06, 0.05}, {0.04, 0.04, 0.04}
@@ -46,7 +47,6 @@ return {
 			{ 'upgrade', 'food', min=3, max=7 },
 			{ 'upgrade', 'crystal', n=1 },
 			{ 'turret', 15, n=2 },
-			{ 'jelly', n=3 }
 		},
 		background = {
 			{0.06, 0.06, 0.06}, {0.07, 0.06, 0.05}, {0.04, 0.04, 0.04}
@@ -63,9 +63,9 @@ return {
 			{ 'upgrade', 'food', min=2, max=7 },
 			{ 'upgrade', 'down', n=1 },
 			{ 'upgrade', 'boost', min=1, max=3 },
-			{ 'upgrade', 'bounce', n=0.5 },
+			{ 'upgrade', 'bounce', n=0.6 },
 			{ 'upgrade', 'multi', n=1 },
-			{ 'turret', min=1, max=2 },
+			{ 'turret', min=2, max=3 },
 			{ 'jelly', min=2, max=5 }
 		},
 		background = {
@@ -84,6 +84,7 @@ return {
 			{ 'upgrade', 'boost', min=1, max=3 },
 			{ 'upgrade', 'crystal', min=0, max=1 },
 			{ 'upgrade', 'reflect', n=1 },
+			{ 'upgrade', 'bounce', n=0.6 },
 			{ 'turret', min=3, max=5 },
 			{ 'jelly', min=4, max=7 },
 		},
