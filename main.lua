@@ -383,6 +383,31 @@ local function colonistDeaths(food)
 	return math.ceil(loFoodDeaths + fraction * (hiFoodDeaths - loFoodDeaths))
 end
 
+local function extend(x, y, dx, dy, xMin, xMax, yMin, yMax)
+	local lx = (xMax - x) / dx
+	if lx < 0 then lx = (xMin - x) / dx end
+	local ly = (yMax - y) / dy
+	if ly < 0 then ly = (yMin - y) / dy end
+	local l = math.min(lx, ly)
+	return dx * l, dy * l
+end
+
+local function drawSightlines(actor, bounds)
+	local lw, lwPrev = 1, love.graphics.getLineWidth()
+	love.graphics.setLineWidth(lw)
+	love.graphics.setColor(0.8, 0.8, 1.0, 0.05)
+	local xMin, xMax = bounds.xMin - lw, bounds.xMax + lw
+	local yMin, yMax = bounds.yMin - lw, bounds.yMax + lw
+	local x0, y0 = grid:toPixel(actor.hx, actor.hy)
+	for _,dir in ipairs(grid.dirs) do
+		local dx, dy = grid:toPixel(dir[1], dir[2])
+		local x, y = x0 + 0.5 * dx, y0 + 0.5 * dy
+		dx, dy = extend(x, y, dx, dy, xMin, xMax, yMin, yMax)
+		love.graphics.line(x, y, x + dx, y + dy)
+	end
+	love.graphics.setLineWidth(lwPrev)
+end
+
 function love.draw()
 	if state == 'intro' then
 		drawText(story.intro)
@@ -392,6 +417,7 @@ function love.draw()
 	camera:use()
 
 	grid:forCellsIn(camera.bounds, triColorHex)
+	drawSightlines(player, camera.bounds)
 
 	local actors = {}
 	for _,actor in pairs(world.objects) do
