@@ -45,7 +45,7 @@ local function actorCollision(G, W, actor, radius, static)
 end
 
 local rockChars = { 'O', '0', 'Q' }
-local rockColor = {0.35, 0.35, 0.25}
+local rockColor = {0.27, 0.1, 0.06}
 local function newRock(G, W, x, y, ch)
 	local dir = math.random(0, 5)
 	local ch = rockChars[math.random(#rockChars)]
