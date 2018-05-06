@@ -401,7 +401,7 @@ local function drawSightlines(actor, bounds)
 	local x0, y0 = grid:toPixel(actor.hx, actor.hy)
 	for _,dir in ipairs(grid.dirs) do
 		local dx, dy = grid:toPixel(dir[1], dir[2])
-		local x, y = x0 + 0.5 * dx, y0 + 0.5 * dy
+		local x, y = x0 + 3.5 * dx, y0 + 3.5 * dy
 		dx, dy = extend(x, y, dx, dy, xMin, xMax, yMin, yMax)
 		love.graphics.line(x, y, x + dx, y + dy)
 	end
