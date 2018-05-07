@@ -162,6 +162,26 @@ local function collisionResponse(self)
 	return true
 end
 
+local drawActor = parent.methods.draw
+local function draw(self, G, ox, oy)
+	drawActor(self, G, ox, oy)
+	if self.shield then
+		local color
+		if self.shield == 'crystal' then
+			color = {unpack(self.color)}
+		elseif self.shield == 'bounce' then
+			color = {0.48, 0.48, 0.32}
+		end
+		local oldColor = { love.graphics.getColor() }
+		color[4] = 1
+		love.graphics.setColor(color)
+
+		local x, y = G:toPixel(self.hx, self.hy)
+		love.graphics.circle('line', x, y, 0.9 * G.a)
+		love.graphics.setColor(oldColor)
+	end
+end
+
 local function drawUI(self, x, y, w)
 	local old = love.graphics.getFont()
 	local f = uiFont
@@ -218,6 +238,7 @@ local methods = {
 	update = update,
 	collide = collide,
 	collisionResponse = collisionResponse,
+	draw = draw,
 	drawUI = drawUI
 }
 local class = { __index = setmetatable(methods, parent.class) }
