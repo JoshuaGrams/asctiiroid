@@ -182,11 +182,94 @@ local function draw(self, G, ox, oy)
 	end
 end
 
+local function scancodeForControl(player, name)
+	local ret = {}
+	for s,nm in pairs(player.scancodes) do
+		if nm == name then
+			table.insert(ret, s)
+		end
+	end
+	return ret
+end
+
+local function keyForControl(player, name)
+	local scan = scancodeForControl(player, name)
+	for i,s in ipairs(scan) do
+		scan[i] = love.keyboard.getKeyFromScancode(s)
+	end
+	return scan
+end
+
+local function keyForDirection(player, dir)
+	for name,ctrl in pairs(controls) do
+		if ctrl.dir == dir then
+			return keyForControl(player, name)
+		end
+	end
+	return false
+end
+
+local function printOff(str, ox, oy, x, y)
+	love.graphics.print(str, x, y, 0, 1, 1, ox, oy)
+end
+
+local function showKeys(player, img)
+	local font = love.graphics.getFont()
+	local iw, ih = img.key:getDimensions()
+	local lh = font:getHeight() * font:getLineHeight()
+	local cw = font:getWidth('@')
+	for i,dir in ipairs(grid.dirs) do
+		local key = keyForDirection(player, i - 1)[1]
+		if not key then
+			error("no control found for direction " .. i)
+		end
+		local hx, hy = player.hx + 1.5 * dir[1], player.hy + 1.5 * dir[2]
+		local x, y = camera:toWindow(grid:toPixel(hx, hy))
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.draw(img.key, x, y, 0, 1, 1, iw/2, ih/2)
+		love.graphics.setColor(0, 0, 0)
+		love.graphics.print(key, x, y, 0, 1, 1, cw/2, lh/2)
+	end
+
+	local x, y = camera:toWindow(grid:toPixel(player.hx, player.hy))
+	local pad = grid.a / 2.5
+	x = x - 6 * grid.a - 3 * (iw + pad)
+	local coords = {
+		{
+			{x, y - (ih + pad/2)},
+			{x + (iw + pad), y - (ih + pad/2)},
+			{x + 2*(iw + pad), y - (ih + pad/2)},
+		}, {
+			{x, y + pad/2},
+			{x + (iw + pad), y + pad/2},
+			{x + 2*(iw + pad), y + pad/2}
+		}
+	}
+	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.draw(img.key, unpack(coords[1][1]))
+	love.graphics.draw(img.key, unpack(coords[1][2]))
+	love.graphics.draw(img.key, unpack(coords[1][3]))
+	love.graphics.draw(img.key, unpack(coords[2][1]))
+	love.graphics.draw(img.key, unpack(coords[2][2]))
+	love.graphics.draw(img.key, unpack(coords[2][3]))
+	local use = keyForControl(player, 'use')
+	local fire = keyForControl(player, 'fire')
+	local accel = keyForControl(player, 'accelerate')
+	local boost = keyForControl(player, 'boost')
+	love.graphics.setColor(0, 0, 0)
+	local ox, oy = (cw - iw)/2, (lh - ih)/2
+	printOff(use[1], ox, oy, unpack(coords[1][1]))
+	printOff(boost, ox, oy, unpack(coords[1][2]))
+	printOff(use[2], ox, oy, unpack(coords[1][3]))
+	printOff(fire[1], ox, oy, unpack(coords[2][1]))
+	printOff(accel, ox, oy, unpack(coords[2][2]))
+	printOff(fire[2], ox, oy, unpack(coords[2][3]))
+end
+
 local function drawUI(self, x, y, w)
 	local old = love.graphics.getFont()
 	local f = uiFont
 	love.graphics.setFont(f)
-
 
 	love.graphics.setColor(0, 0, 0, 0.59)
 	love.graphics.rectangle('fill', x, y, w, 64)
@@ -229,6 +312,8 @@ local function drawUI(self, x, y, w)
 	str = 'food: ' .. tostring(self.food)
 	love.graphics.print(str, x, y)
 	x = f:getWidth(str) + spacing
+
+	if help then showKeys(self, img) end
 
 	love.graphics.setFont(old)
 end

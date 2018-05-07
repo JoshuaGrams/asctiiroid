@@ -38,7 +38,18 @@ local function toWorld(self, xWindow, yWindow)
 	return xWorld, yWorld
 end
 
-local methods = { use = use, toWorld = toWorld }
+local function toWindow(self, xWorld, yWorld)
+	local w, h = love.graphics.getDimensions()
+	local scale = math.sqrt(self.area / (w*h))
+	local cos, sin = math.cos(-self.angle), math.sin(-self.angle)
+	local x, y = xWorld - self.cx, yWorld - self.cy
+	x, y = x / scale, y / scale
+	local xWindow = x*cos + y*sin + w/2
+	local yWindow = -x*sin + y*cos + h/2
+	return xWindow, yWindow
+end
+
+local methods = { use = use, toWorld = toWorld, toWindow = toWindow }
 local class = { __index = methods }
 
 local function new(cx, cy, area, angle)

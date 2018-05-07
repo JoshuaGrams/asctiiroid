@@ -244,6 +244,10 @@ function love.load(args)
 	xc = 0.5 * font:getWidth('@')
 	yc = 0.55 * font:getHeight()
 
+	img = {
+		key = love.graphics.newImage('img/key.png'),
+	}
+
 	grid = HexGrid.new(2)
 	grid.drawChar = drawChar
 
@@ -530,6 +534,14 @@ function love.keypressed(k, s)
 			state = 'menu'
 		elseif player:keypressed(k, s) then
 			nextTurn()
+		elseif s == 'tab' then
+			help = true
 		end
+	end
+end
+
+function love.keyreleased(k, s)
+	if s == 'tab' then
+		help = false
 	end
 end
