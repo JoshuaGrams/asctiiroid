@@ -345,10 +345,6 @@ local function drawMenu(w, h)
 	end
 end
 
-function replaceValues(line, values)
-	return string.gsub(line, "%%(%a+)", values or {})
-end
-
 function drawText(template, values, bg)
 	local oldFont = love.graphics.getFont()
 	local w, h = love.graphics.getDimensions()
@@ -366,7 +362,7 @@ function drawText(template, values, bg)
 	local x = 0.5 * w
 	local lines = {}
 	for _,line in ipairs(template) do
-		line = replaceValues(line, values)
+		line = string.gsub(line, "%%(%a+)", values or {})
 		table.insert(lines, line)
 		x = math.min(x, 0.5 * (w - f:getWidth(line)))
 	end
