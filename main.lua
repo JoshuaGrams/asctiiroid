@@ -226,13 +226,13 @@ function love.load(args)
 		if n then levels[1].seed = math.floor(n) end
 	end
 
-	state = 'intro'
+	state = 'menu'
 	options = {
 		'New Game',
 		'Continue Game',
 		'Restart',
 		'Exit',
-		selected = 2
+		selected = 1
 	}
 	actors = {}
 
@@ -298,13 +298,13 @@ local function menuSelect()
 		levels[1].seed = nil
 		actors = {}
 		newGame()
-		state = 'play'
+		state = 'intro'
 	elseif option == 'Continue Game' then
 		state = 'play'
 	elseif option == 'Restart' then
 		actors = {}
 		newGame()
-		state = 'play'
+		state = 'intro'
 	elseif option == 'Exit' then
 		love.event.quit()
 	end
@@ -328,7 +328,7 @@ local function drawMenu(w, h)
 	local y = 0.5 * (h - #options * lineHeight)
 	for i,option in ipairs(options) do
 		if option == 'Restart' then
-			option = option .. ' #' .. separateThousands(levels[1].seed)
+			option = option .. ' Asteroid ' .. separateThousands(levels[1].seed)
 		end
 		local optionWidth = font:getWidth(option)
 		local x = 0.5 * (w - optionWidth)
@@ -506,7 +506,7 @@ end
 
 function love.keypressed(k, s)
 	if state == 'intro' then
-		state = 'menu'
+		state = 'play'
 	elseif state == 'ending' and not timeout then
 		state = 'menu'
 	elseif state == 'menu' and not timeout then
@@ -528,6 +528,7 @@ function love.keypressed(k, s)
 	elseif state == 'play' then
 		if k == 'escape' then
 			state = 'menu'
+			options.selected = 2
 		elseif player:keypressed(k, s) then
 			nextTurn()
 		elseif s == 'tab' then
