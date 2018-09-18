@@ -131,7 +131,7 @@ local function collide(self, other, t)
 end
 
 local function hitShake()
-	shake = Shake.new(10, 0.005, 1.1, 13)
+	shake = Shake.new(2.5, 0.005, 0.6, 13)
 end
 
 local function collisionResponse(self)
