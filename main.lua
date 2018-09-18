@@ -393,9 +393,9 @@ local function extend(x, y, dx, dy, xMin, xMax, yMin, yMax)
 end
 
 local function drawSightlines(actor, bounds)
-	local lw, lwPrev = 1, love.graphics.getLineWidth()
+	local lw, lwPrev = 2, love.graphics.getLineWidth()
 	love.graphics.setLineWidth(lw)
-	love.graphics.setColor(0.8, 0.8, 1.0, 0.05)
+	love.graphics.setColor(0.8, 0.8, 1.0, 0.08)
 	local xMin, xMax = bounds.xMin - lw, bounds.xMax + lw
 	local yMin, yMax = bounds.yMin - lw, bounds.yMax + lw
 	local x0, y0 = grid:toPixel(actor.hx, actor.hy)
