@@ -19,7 +19,6 @@ local function bounds(self, aspect)
 end
 
 local function use(self)
-	local w, h = love.graphics.getDimensions()
 	local scale = math.sqrt(w*h / self.area)
 	self.bounds = bounds(self, w/h)
 	love.graphics.translate(w/2, h/2)
@@ -29,7 +28,6 @@ local function use(self)
 end
 
 local function toWorld(self, xWindow, yWindow)
-	local w, h = love.graphics.getDimensions()
 	local scale = math.sqrt(self.area / (w*h))
 	local cos, sin = math.cos(self.angle), math.sin(self.angle)
 	local x, y = scale * (xWindow - w/2), scale * (yWindow - h/2)
@@ -39,7 +37,6 @@ local function toWorld(self, xWindow, yWindow)
 end
 
 local function toWindow(self, xWorld, yWorld)
-	local w, h = love.graphics.getDimensions()
 	local scale = math.sqrt(self.area / (w*h))
 	local cos, sin = math.cos(-self.angle), math.sin(-self.angle)
 	local x, y = xWorld - self.cx, yWorld - self.cy
@@ -53,7 +50,6 @@ local methods = { use = use, toWorld = toWorld, toWindow = toWindow }
 local class = { __index = methods }
 
 local function new(cx, cy, area, angle)
-	local w, h = love.graphics.getDimensions()
 	local camera = {
 		cx = cx or w/2,  cy = cy or h/2,
 		area = area or w*h,

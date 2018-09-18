@@ -224,6 +224,9 @@ function love.load(args)
 	for _,arg in ipairs(args) do
 		local n = tonumber(arg)
 		if n then levels[1].seed = math.floor(n) end
+		if arg == '-f' then
+			love.window.setFullscreen(true, 'desktop')
+		end
 	end
 
 	state = 'menu'
@@ -236,10 +239,16 @@ function love.load(args)
 	}
 	actors = {}
 
+	w, h = love.graphics.getDimensions()
+	local ex = math.max(0, math.floor(w - h*4/3))
+	local ey = math.max(0, math.floor(h - w*3/4))
+	x0, y0 = math.floor(ex/2), math.floor(ey/2)
+	w, h = w - ex, h - ey
+
 	camera = Camera.new(0, 0)
 
-	font = love.graphics.newFont('RobotoMono-Regular.ttf', 36)
-	uiFont = love.graphics.newFont('RobotoMono-Regular.ttf', 24)
+	font = love.graphics.newFont('RobotoMono-Regular.ttf', h/20)
+	uiFont = love.graphics.newFont('RobotoMono-Regular.ttf', h/30)
 	love.graphics.setFont(font)
 	xc = 0.5 * font:getWidth('@')
 	yc = 0.55 * font:getHeight()
@@ -248,7 +257,13 @@ function love.load(args)
 		key = love.graphics.newImage('img/key.png'),
 	}
 
-	grid = HexGrid.new(2)
+	local a = h / 40
+	local match, index
+	for i,size in ipairs(HexGrid.sizes) do
+		local m = (a > size[1]) and size[1] / a or a / size[1]
+		if not match or m > match then match, index = m, i end
+	end
+	grid = HexGrid.new(index)
 	grid.drawChar = drawChar
 
 	world = Collision.new(3*grid.a)
@@ -347,7 +362,6 @@ end
 
 function drawText(template, values, bg)
 	local oldFont = love.graphics.getFont()
-	local w, h = love.graphics.getDimensions()
 	if bg then
 		love.graphics.setColor(bg)
 		love.graphics.rectangle('fill', 0, 0, w, h)
@@ -409,11 +423,15 @@ local function drawSightlines(actor, bounds)
 end
 
 function love.draw()
+	love.graphics.translate(x0, y0)
+	love.graphics.setScissor(x0, y0, w, h)
+
 	if state == 'intro' then
 		drawText(story.intro)
 		return
 	end
 
+	love.graphics.push()
 	camera:use()
 
 	grid:forCellsIn(camera.bounds, triColorHex)
@@ -432,8 +450,7 @@ function love.draw()
 	end
 
 	-- Reset transform and draw UI
-	love.graphics.origin()
-	local w, h = love.graphics.getDimensions()
+	love.graphics.pop()
 	player:drawUI(0, 0, w)
 
 	if state == 'menu' then
