@@ -9,8 +9,8 @@ local upgradeTypes = {
 	multi = { ch = 'w', properties = {shot='multi'} },
 	crystal = { ch = 'C', properties = {shield='crystal'} },
 	bounce = { ch = 'B', properties = {shield='bounce'} },
-	up = { ch = '<', properties = {depth=-1} },
-	down = { ch = '>', properties = {depth=1} },
+	up = { ch = '^', properties = {depth=-1} },
+	down = { ch = 'v', properties = {depth=1} },
 	food = { ch = '&', properties = {food=50} }
 }
 
