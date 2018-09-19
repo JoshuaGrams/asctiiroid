@@ -22,6 +22,7 @@ local controls = {
 local function keypressed(self, k, s)
 	local name = self.scancodes[s]
 	if name then
+		name = name[1]
 		local c = controls[name]
 		if c.dir then self.controls.dir = c.dir end
 		if c.instant and type(c.instant) == 'function' then
@@ -185,8 +186,8 @@ end
 local function scancodeForControl(player, name)
 	local ret = {}
 	for s,nm in pairs(player.scancodes) do
-		if nm == name then
-			table.insert(ret, s)
+		if nm[1] == name then
+			ret[nm[2]] = s
 		end
 	end
 	return ret
@@ -209,14 +210,11 @@ local function keyForDirection(player, dir)
 	return false
 end
 
-local function printOff(str, ox, oy, x, y)
-	love.graphics.print(str, x, y, 0, 1, 1, ox, oy)
-end
-
 local function showKeys(player, img)
 	local alpha = type(help) == "number" and math.min(help, 1) or 1
 	local font = love.graphics.getFont()
 	local iw, ih = img.key:getDimensions()
+	local sc = (h / 18) / ih
 	local lh = font:getHeight() * font:getLineHeight()
 	local cw = font:getWidth('@')
 	for i,dir in ipairs(grid.dirs) do
@@ -227,7 +225,7 @@ local function showKeys(player, img)
 		local hx, hy = player.hx + 1.5 * dir[1], player.hy + 1.5 * dir[2]
 		local x, y = camera:toWindow(grid:toPixel(hx, hy))
 		love.graphics.setColor(1, 1, 1, alpha)
-		love.graphics.draw(img.key, x, y, 0, 1, 1, iw/2, ih/2)
+		love.graphics.draw(img.key, x, y, 0, sc, sc, iw/2, ih/2)
 		love.graphics.setColor(0, 0, 0, alpha)
 		love.graphics.print(key, x, y, 0, 1, 1, cw/2, lh/2)
 	end
@@ -237,20 +235,20 @@ local function showKeys(player, img)
 	x = x - 6 * grid.a
 	local coords = {
 		{
-			{x - 2*(iw + pad), y - (ih + pad/2), key=keyForControl(player, 'boost')},
-			{x - 1*(iw + pad), y - (ih + pad/2), key=keyForControl(player, 'use')[2]},
+			{x - 2*(iw*sc + pad), y - (ih*sc + pad/2), key=keyForControl(player, 'boost')[1]},
+			{x - 1*(iw*sc + pad), y - (ih*sc + pad/2), key=keyForControl(player, 'use')[2]},
 		}, {
-			{x - 2*(iw + pad), y + pad/2, key=keyForControl(player, 'accelerate')},
-			{x - 1*(iw + pad), y + pad/2, key=keyForControl(player, 'fire')[2]}
+			{x - 2*(iw*sc + pad), y + pad/2, key=keyForControl(player, 'accelerate')[1]},
+			{x - 1*(iw*sc + pad), y + pad/2, key=keyForControl(player, 'fire')[2]}
 		}
 	}
-	local ox, oy = (cw - iw)/2, (lh - ih)/3
 	for _,row in ipairs(coords) do
 		for _,item in ipairs(row) do
 			love.graphics.setColor(1, 1, 1, alpha)
-			love.graphics.draw(img.key, unpack(item))
+			local px, py = unpack(item)
+			love.graphics.draw(img.key, px, py, 0, sc, sc, iw/2, ih/2)
 			love.graphics.setColor(0, 0, 0, alpha)
-			printOff(item.key, ox, oy, unpack(item))
+			love.graphics.print(item.key, px, py, 0, 1, 1, cw/2, lh/2)
 		end
 	end
 end
@@ -327,6 +325,7 @@ local methods = {
 local class = { __index = setmetatable(methods, parent.class) }
 
 local function new(char, hx, hy, dir, color, acceleration)
+	help = true
 	local p = parent.new(char, hx, hy, dir, color)
 	p.acceleration = acceleration or 0.25
 	p.ammo = 3
@@ -335,19 +334,19 @@ local function new(char, hx, hy, dir, color, acceleration)
 	p.food = 0
 	p.bulletType = 'energy'
 	p.scancodes = {
-		u = 'upleft',
-		i = 'up',
-		o = 'upright',
-		j = 'downleft',
-		k = 'down',
-		l = 'downright',
-		w = 'use',
-		e = 'boost',
-		r = 'use',
-		s = 'fire',
-		d = 'accelerate',
-		f = 'fire',
-		space = 'wait'
+		u = {'upleft', 1},
+		i = {'up', 1},
+		o = {'upright', 1},
+		j = {'downleft', 1},
+		k = {'down', 1},
+		l = {'downright', 1},
+		w = {'use', 1},
+		e = {'boost', 1},
+		r = {'use', 2},
+		s = {'fire', 1},
+		d = {'accelerate', 1},
+		f = {'fire', 2},
+		space = {'wait', 1}
 	}
 	return setmetatable(p, class)
 end
