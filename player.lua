@@ -210,13 +210,31 @@ local function keyForDirection(player, dir)
 	return false
 end
 
+local function printAligned(text, x, y, horiz, vert)
+	local f = love.graphics.getFont()
+	local h = f:getHeight() * f:getLineHeight()
+	local w = f:getWidth(text)
+	-- Default horizontal alignment is "left".
+	if horiz == 'center' or horiz == 'middle' then x = x - w/2
+	elseif horiz == 'right' then x = x - w end
+	-- Default vertical alignment is "top".
+	if vert == 'center' or vert == 'middle' then y = y - h/2
+	elseif vert == 'bottom' then y = y - h end
+	love.graphics.print(text, x, y)
+end
+
 local function showKeys(player, img)
 	local alpha = type(help) == "number" and math.min(help, 1) or 1
+	love.graphics.setColor(0.1, 0.1, 0.1, alpha * 0.6)
+	love.graphics.rectangle('fill', 0, 0, w, h)
 	local font = love.graphics.getFont()
 	local iw, ih = img.key:getDimensions()
 	local sc = (h / 18) / ih
 	local lh = font:getHeight() * font:getLineHeight()
 	local cw = font:getWidth('@')
+	local x, y = camera:toWindow(grid:toPixel(player.hx, player.hy + 3))
+	love.graphics.setColor(0.45, 0.45, 0.85, alpha)
+	printAligned("Aim ship", x, y, 'center', 'bottom')
 	for i,dir in ipairs(grid.dirs) do
 		local key = keyForDirection(player, i - 1)[1]
 		if not key then
@@ -230,16 +248,33 @@ local function showKeys(player, img)
 		love.graphics.print(key, x, y, 0, 1, 1, cw/2, lh/2)
 	end
 
-	local x, y = camera:toWindow(grid:toPixel(player.hx, player.hy))
+	x, y = camera:toWindow(grid:toPixel(player.hx, player.hy))
+	x = x - 11 * grid.a
+	y = y - 0.5 * grid.a
 	local pad = grid.a / 2.5
-	x = x - 6 * grid.a
 	local coords = {
 		{
-			{x - 2*(iw*sc + pad), y - (ih*sc + pad/2), key=keyForControl(player, 'boost')[1]},
-			{x - 1*(iw*sc + pad), y - (ih*sc + pad/2), key=keyForControl(player, 'use')[2]},
+			{
+				x - 2*(iw*sc + pad),  y - (ih*sc + pad)/2,
+				key=keyForControl(player, 'boost')[1],
+				tip = "Afterburner", tx = -1, ty = -1.5*grid.a
+			},
+			{
+				x - 1*(iw*sc + pad),  y - (ih*sc + pad)/2,
+				key=keyForControl(player, 'use')[2],
+				tip = "Use item/exit", tx = 1, ty = -1.5*grid.a
+			},
 		}, {
-			{x - 2*(iw*sc + pad), y + pad/2, key=keyForControl(player, 'accelerate')[1]},
-			{x - 1*(iw*sc + pad), y + pad/2, key=keyForControl(player, 'fire')[2]}
+			{
+				x - 2*(iw*sc + pad),  y + (ih*sc + pad)/2,
+				key=keyForControl(player, 'accelerate')[1],
+				tip = "Accelerate", tx = -1, ty = 1.5*grid.a
+			},
+			{
+				x - 1*(iw*sc + pad),  y + (ih*sc + pad)/2,
+				key=keyForControl(player, 'fire')[2],
+				tip = "Fire", tx = 1, ty = 1.5*grid.a
+			}
 		}
 	}
 	for _,row in ipairs(coords) do
@@ -249,6 +284,11 @@ local function showKeys(player, img)
 			love.graphics.draw(img.key, px, py, 0, sc, sc, iw/2, ih/2)
 			love.graphics.setColor(0, 0, 0, alpha)
 			love.graphics.print(item.key, px, py, 0, 1, 1, cw/2, lh/2)
+			px, py = px + item.tx, py + item.ty
+			local hAlign = item.tx < 0 and 'right' or 'leftt'
+			local vAlign = item.ty < 0 and 'bottom' or 'top'
+			love.graphics.setColor(0.45, 0.45, 0.85, alpha)
+			printAligned(item.tip, px, py, hAlign, vAlign)
 		end
 	end
 end
@@ -300,15 +340,17 @@ local function drawUI(self, x, y, w)
 	love.graphics.print(str, x, y)
 	x = f:getWidth(str) + spacing
 
-	local lh = f:getHeight() * f:getLineHeight()
-	local q = '?'
-	local qx, qy, qr = w - 2 * lh,  h - 2 * lh,  0.75 * lh
-	local qw = f:getWidth(q)
-	love.graphics.setColor(0.7, 0.7, 0.3, 0.45)
-	love.graphics.circle('fill', qx+qr, qy+qr, qr)
-	love.graphics.setColor(0, 0, 0)
-	love.graphics.print(q, qx + (2*qr - qw)/2, qy + (2*qr - lh)/2)
-
+	if help ~= true then
+		local alpha = type(help) == "number" and math.min(help, 1) or 0
+		local lh = f:getHeight() * f:getLineHeight()
+		local q = '?'
+		local qx, qy, qr = w - 2 * lh,  h - 2 * lh,  0.75 * lh
+		local qw = f:getWidth(q)
+		love.graphics.setColor(0.7, 0.7, 0.3, 0.45 * (1 - alpha))
+		love.graphics.circle('fill', qx+qr, qy+qr, qr)
+		love.graphics.setColor(0, 0, 0)
+		love.graphics.print(q, qx + (2*qr - qw)/2, qy + (2*qr - lh)/2)
+	end
 	if help then showKeys(self, img) end
 
 	love.graphics.setFont(old)
