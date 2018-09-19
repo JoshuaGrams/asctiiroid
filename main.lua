@@ -233,6 +233,8 @@ function love.load(args)
 		end
 	end
 
+	mouseStarted = false
+
 	state = 'menu'
 	options = {
 		'New Game',
@@ -589,6 +591,10 @@ local function mouseOverHelp(x, y)
 end
 
 function love.mousemoved(x, y)
+	if not mouseStarted then
+		mouseStarted = true
+		return
+	end
 	if state == 'menu' then
 		mouseOverMenu(y)
 	end
