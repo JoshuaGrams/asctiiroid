@@ -214,6 +214,7 @@ local function printOff(str, ox, oy, x, y)
 end
 
 local function showKeys(player, img)
+	local alpha = type(help) == "number" and math.min(help, 1) or 1
 	local font = love.graphics.getFont()
 	local iw, ih = img.key:getDimensions()
 	local lh = font:getHeight() * font:getLineHeight()
@@ -225,45 +226,33 @@ local function showKeys(player, img)
 		end
 		local hx, hy = player.hx + 1.5 * dir[1], player.hy + 1.5 * dir[2]
 		local x, y = camera:toWindow(grid:toPixel(hx, hy))
-		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.setColor(1, 1, 1, alpha)
 		love.graphics.draw(img.key, x, y, 0, 1, 1, iw/2, ih/2)
-		love.graphics.setColor(0, 0, 0)
+		love.graphics.setColor(0, 0, 0, alpha)
 		love.graphics.print(key, x, y, 0, 1, 1, cw/2, lh/2)
 	end
 
 	local x, y = camera:toWindow(grid:toPixel(player.hx, player.hy))
 	local pad = grid.a / 2.5
-	x = x - 6 * grid.a - 3 * (iw + pad)
+	x = x - 6 * grid.a
 	local coords = {
 		{
-			{x, y - (ih + pad/2)},
-			{x + (iw + pad), y - (ih + pad/2)},
-			{x + 2*(iw + pad), y - (ih + pad/2)},
+			{x - 2*(iw + pad), y - (ih + pad/2), key=keyForControl(player, 'boost')},
+			{x - 1*(iw + pad), y - (ih + pad/2), key=keyForControl(player, 'use')[2]},
 		}, {
-			{x, y + pad/2},
-			{x + (iw + pad), y + pad/2},
-			{x + 2*(iw + pad), y + pad/2}
+			{x - 2*(iw + pad), y + pad/2, key=keyForControl(player, 'accelerate')},
+			{x - 1*(iw + pad), y + pad/2, key=keyForControl(player, 'fire')[2]}
 		}
 	}
-	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.draw(img.key, unpack(coords[1][1]))
-	love.graphics.draw(img.key, unpack(coords[1][2]))
-	love.graphics.draw(img.key, unpack(coords[1][3]))
-	love.graphics.draw(img.key, unpack(coords[2][1]))
-	love.graphics.draw(img.key, unpack(coords[2][2]))
-	love.graphics.draw(img.key, unpack(coords[2][3]))
-	local use = keyForControl(player, 'use')
-	local fire = keyForControl(player, 'fire')
-	local accel = keyForControl(player, 'accelerate')
-	local boost = keyForControl(player, 'boost')
-	love.graphics.setColor(0, 0, 0)
-	local ox, oy = (cw - iw)/2, (lh - ih)/2
-	printOff(use[1], ox, oy, unpack(coords[1][1]))
-	printOff(boost, ox, oy, unpack(coords[1][2]))
-	printOff(use[2], ox, oy, unpack(coords[1][3]))
-	printOff(fire[1], ox, oy, unpack(coords[2][1]))
-	printOff(accel, ox, oy, unpack(coords[2][2]))
-	printOff(fire[2], ox, oy, unpack(coords[2][3]))
+	local ox, oy = (cw - iw)/2, (lh - ih)/3
+	for _,row in ipairs(coords) do
+		for _,item in ipairs(row) do
+			love.graphics.setColor(1, 1, 1, alpha)
+			love.graphics.draw(img.key, unpack(item))
+			love.graphics.setColor(0, 0, 0, alpha)
+			printOff(item.key, ox, oy, unpack(item))
+		end
+	end
 end
 
 local function drawUI(self, x, y, w)
@@ -312,6 +301,15 @@ local function drawUI(self, x, y, w)
 	str = 'food: ' .. tostring(self.food)
 	love.graphics.print(str, x, y)
 	x = f:getWidth(str) + spacing
+
+	local lh = f:getHeight() * f:getLineHeight()
+	local q = '?'
+	local qx, qy, qr = w - 2 * lh,  h - 2 * lh,  0.75 * lh
+	local qw = f:getWidth(q)
+	love.graphics.setColor(0.7, 0.7, 0.3, 0.45)
+	love.graphics.circle('fill', qx+qr, qy+qr, qr)
+	love.graphics.setColor(0, 0, 0)
+	love.graphics.print(q, qx + (2*qr - qw)/2, qy + (2*qr - lh)/2)
 
 	if help then showKeys(self, img) end
 

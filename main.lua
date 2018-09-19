@@ -503,6 +503,11 @@ function love.update(dt)
 	camera.cy = camera.cy + dy
 	camera.angle = 0
 	if shake then shake:update(dt, camera) end
+
+	if type(help) == 'number' then
+		help = help - dt
+		if help <= 0 then help = false end
+	end
 end
 
 local function nextTurn()
@@ -549,6 +554,7 @@ function love.keypressed(k, s)
 			love.event.quit()
 		end
 	elseif state == 'play' then
+		if help == true then help = 1 end
 		if k == 'escape' then
 			state = 'menu'
 			options.selected = 2
@@ -557,12 +563,6 @@ function love.keypressed(k, s)
 		elseif s == 'tab' then
 			help = true
 		end
-	end
-end
-
-function love.keyreleased(k, s)
-	if s == 'tab' then
-		help = false
 	end
 end
 
@@ -579,6 +579,14 @@ function mouseOverMenu(y)
 	return false
 end
 
+local function mouseOverHelp(x, y)
+	local lh = uiFont:getHeight() * uiFont:getLineHeight()
+	local qx, qy = x0 + w - 2 * lh,  y0 + h - 2 * lh
+	local qr = 0.75 * lh
+	local dx, dy = x - (qx+qr), y - (qy+qr)
+	return dx * dx + dy * dy <= qr * qr
+end
+
 function love.mousemoved(x, y)
 	if state == 'menu' then
 		mouseOverMenu(y)
@@ -588,5 +596,7 @@ end
 function love.mousepressed(x, y, b)
 	if state == 'menu' and mouseOverMenu(y) then
 		menuSelect()
+	elseif state == 'play' and mouseOverHelp(x, y) then
+		help = true
 	end
 end
