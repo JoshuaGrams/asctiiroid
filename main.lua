@@ -623,7 +623,11 @@ function love.mousepressed(x, y, b)
 		state = 'play'
 	elseif state == 'menu' and mouseOverMenu(y) then
 		menuSelect()
-	elseif state == 'play' and mouseOverHelp(x, y) then
-		help = true
+	elseif state == 'play' then
+		if help then
+			help = 1
+		elseif mouseOverHelp(x, y) then
+			help = true
+		end
 	end
 end
