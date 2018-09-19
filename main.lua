@@ -90,7 +90,7 @@ local function addYam(G, W)
 	cache.n = #cache
 end
 
-local function createWalls(G, W)
+local function createWalls(G, W, newGame)
 	if depth == #levels then addYam(G, W) end
 
 	local origin
@@ -117,8 +117,12 @@ local function createWalls(G, W)
 	end
 
 	-- Add stairs up
-	Upgrade.new('up', unpack(origin))
+	local stairsUp = Upgrade.new('up', unpack(origin))
 	table.remove(floorTiles, origin.index)
+	if newGame then
+		W:remove(stairsUp, true)
+		G:set(stairsUp.hx, stairsUp.hy, false)
+	end
 
 	-- Add items and enemies
 	local destination
@@ -185,7 +189,7 @@ function generateLevel(newPlayer)
 	end
 	world:clear()
 	grid:generate(level.origin, level.tiles, rooms, level.chances, level.seed)
-	local origin, dest = createWalls(grid, world)
+	local origin, dest = createWalls(grid, world, newPlayer)
 	if levels[depth+1] then
 		levels[depth+1].seed = math.floor(math.random() * 1e6)
 		levels[depth+1].origin = {x=dest[1], y=dest[2]}
