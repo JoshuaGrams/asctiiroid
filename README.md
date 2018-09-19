@@ -6,7 +6,7 @@ return to the surface to feed a starving space colony.
 
 ![screenshot](asctiiroid.jpg)
 
-Keys (I've used scancodes, so hopefully these are in the QWERTY
+Keys (I've used scancodes, so these should be in the QWERTY
 positions even if you're using a different keyboard layout):
 
 * UIO/JKL (right hand) - Aim your ship.
@@ -30,8 +30,7 @@ Enemies
 Objects
 -------
 
-* `>`, `<`: exits (down and up). Think of these as "forward" and
-  "back".
+* `v`, `^`: exits (down and up).
 
 * `&` (orange): food.  Collect this to feed your starving friends
   and neighbors.
@@ -44,7 +43,7 @@ Objects
 * `+`: Boost fuel (10 units).
 
 * `w`: Multi-shot.  Fire all three bullets at once.
-  Dramatically shortens your bullets' range.
+  Dramatically shortens the range of your bullets.
 
 * `!`: Single-shot.  Restore single shot mode.
 
