@@ -435,7 +435,6 @@ function love.draw()
 	camera:use()
 
 	grid:forCellsIn(camera.bounds, triColorHex)
-	drawSightlines(player, camera.bounds)
 
 	local actors = {}
 	for _,actor in pairs(world.objects) do
@@ -448,6 +447,8 @@ function love.draw()
 	for _,actor in ipairs(actors) do
 		actor:draw(grid, xc, yc)
 	end
+
+	drawSightlines(player, camera.bounds)
 
 	-- Reset transform and draw UI
 	love.graphics.pop()
