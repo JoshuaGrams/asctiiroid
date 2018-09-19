@@ -332,7 +332,7 @@ local function drawUI(self, x, y, w)
 
 	local b = Bullet.types[self.bulletType]
 	local str = 'shots (' .. self.bulletType ..'): '
-	for i=1,self.ammo do str = str .. '*' end
+	for i=1,3 do str = str .. (i <= self.ammo and '*' or ' ') end
 	love.graphics.setColor(b.color)
 	love.graphics.print(str, x, y)
 	x = x + f:getWidth(str) + spacing
