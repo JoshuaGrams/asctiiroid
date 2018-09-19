@@ -3,15 +3,15 @@ local Colors = require 'colors'
 local parent = require 'actor'
 
 local upgradeTypes = {
-	boost = { ch = '+', properties = {boost=10} },
-	blast = { ch = '!', properties = {shot='single', bulletType='energy'} },
-	reflect = { ch = 'z', properties = {shot='single', bulletType='bounce'} },
-	multi = { ch = 'w', properties = {shot='multi'} },
-	crystal = { ch = 'C', properties = {shield='crystal'} },
-	bounce = { ch = 'B', properties = {shield='bounce'} },
-	up = { ch = '^', properties = {depth=-1} },
-	down = { ch = 'v', properties = {depth=1} },
-	food = { ch = '&', properties = {food=50} }
+	boost = { ch = '+', properties = {boost=10}, tip = "Afterburner fuel" },
+	blast = { ch = '!', properties = {shot='single', bulletType='energy'}, tip = "Single-shot weapon" },
+	reflect = { ch = 'z', properties = {shot='single', bulletType='bouncy'}, tip = "Bouncy bullets." },
+	multi = { ch = 'w', properties = {shot='multi'}, tip = "Triple-shot weapon" },
+	crystal = { ch = 'C', properties = {shield='crystal'}, tip = "Crystal shield" },
+	bounce = { ch = 'B', properties = {shield='bounce'}, tip = "Bounce shield" },
+	up = { ch = '^', properties = {depth=-1}, tip = "Next level (up)" },
+	down = { ch = 'v', properties = {depth=1}, tip = "Next level (down)" },
+	food = { ch = '&', properties = {food=50}, tip = "Food" }
 }
 
 local methods = {}
@@ -27,6 +27,7 @@ local function new(kind, hx, hy)
 	end
 	local self = parent.new(u.ch, hx, hy, 4, color)
 	self.properties = u.properties
+	self.tip = u.tip
 	local x, y = grid:toPixel(hx, hy)
 	self.collider = { x=x, y=y, r=grid.a }
 	self.collide = false

@@ -293,6 +293,15 @@ local function showKeys(player, img)
 	end
 end
 
+local function showTip()
+	love.graphics.setColor(0.1, 0.1, 0.1, 0.6)
+	local pad = 3
+	love.graphics.rectangle('fill', tip.x - pad, tip.y - pad, tip.w + 2*pad, tip.h + 2*pad)
+	love.graphics.setColor(0.45, 0.45, 0.85)
+	love.graphics.setFont(uiFont)
+	love.graphics.print(tip.text, tip.x, tip.y)
+end
+
 local function drawUI(self, x, y, w)
 	local old = love.graphics.getFont()
 	local f = uiFont
@@ -352,6 +361,7 @@ local function drawUI(self, x, y, w)
 		love.graphics.print(q, qx + (2*qr - qw)/2, qy + (2*qr - lh)/2)
 	end
 	if help then showKeys(self, img) end
+	if tip then showTip() end
 
 	love.graphics.setFont(old)
 end

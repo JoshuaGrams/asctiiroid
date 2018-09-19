@@ -557,6 +557,7 @@ function love.keypressed(k, s)
 			love.event.quit()
 		end
 	elseif state == 'play' then
+		if tip then tip = nil end
 		if help == true then help = 1 end
 		if k == 'escape' then
 			state = 'menu'
@@ -597,6 +598,23 @@ function love.mousemoved(x, y)
 	end
 	if state == 'menu' then
 		mouseOverMenu(y)
+	elseif state == 'play' then
+		local hx, hy = grid:round(grid:fromPixel(camera:toWorld(x - x0, y - y0)))
+		local item = grid:get(hx, hy)
+		if item and item.tip then
+			local tw = uiFont:getWidth(item.tip)
+			local th = uiFont:getHeight() * font:getLineHeight()
+			local px, py = camera:toWindow(grid:toPixel(hx, hy))
+			px, py = px + x0, py + y0
+			tip = {
+				text = item.tip,
+				x = math.min(px + grid.a, w - tw - 10),
+				y = math.min(py + grid.a, h - th - 10),
+				w = tw, h = th
+			}
+		else
+			tip = false
+		end
 	end
 end
 
