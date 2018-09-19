@@ -104,7 +104,6 @@ end
 local function collide_objects(a, b, out)
 	if a == b then return end
 	local t = collisionTime(a.collider, b.collider)
-	local ac, bc = a.collider, b.collider
 	if t and t <= 1 then
 		table.insert(out, {a=a, b=b, t=t})
 	end
@@ -166,12 +165,24 @@ local function collisions(self, out)
 	return out
 end
 
+-- Assumes all objects are already sorted.
+local function pick(self, x, y, r)
+	local pickers = {{collider = { x = x, y = y, r = r or 0, vx = 0, vy = 0 }}}
+	local col, row = cell(self.size, x, y)
+	local contacts = collide_cells(self, col, row, all, pickers, self.moveable, {})
+	local out = {}
+	for _,c in ipairs(contacts) do
+		table.insert(out, c.a == pickers[1] and c.b or c.a)
+	end
+	return out
+end
+
 
 ----------------------------------------------------------------
 
 local methods = {
 	add = add, remove = remove, clear = clear,
-	sort = sort, collisions = collisions
+	sort = sort, collisions = collisions, pick = pick
 }
 local class = { __index = methods }
 

@@ -77,6 +77,7 @@ local function new(ship, kind)
 	local hx, hy = ship.hx + ship.vx + dx, ship.hy + ship.vy + dy
 	local b = parent.new(t.ch, hx, hy, ship.dir, t.color)
 
+	b.tip = "Bullet"
 	b.owner, b.turns = ship, t.turns
 	b.vx, b.vy = ship.vx + t.v*dx, ship.vy + t.v*dy
 	local px, py = grid:toPixel(b.hx, b.hy)

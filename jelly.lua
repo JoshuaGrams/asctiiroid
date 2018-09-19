@@ -88,6 +88,7 @@ new = function(hx, hy, small, timeout, vMax)
 	local dir = math.random(0, 5)
 	local ch = small and 'o' or 'O'
 	local self = parent.new(ch, hx, hy, dir, {0.43, 0.08, 0.35})
+	self.tip = "Acid Jelly"
 	self.small = small or false
 	self.timeout = timeout or 5
 	self.turns = math.random(1, self.timeout)

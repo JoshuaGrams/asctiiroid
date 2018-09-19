@@ -599,13 +599,19 @@ function love.mousemoved(x, y)
 	if state == 'menu' then
 		mouseOverMenu(y)
 	elseif state == 'play' then
-		local hx, hy = grid:round(grid:fromPixel(camera:toWorld(x - x0, y - y0)))
+		local wx, wy = camera:toWorld(x - x0, y - y0)
+		local hx, hy = grid:round(grid:fromPixel(wx, wy))
 		local item = grid:get(hx, hy)
+		if not item then
+			world:sort()
+			for _,it in ipairs(world:pick(wx, wy)) do
+				if it.tip then item = it; break end
+			end
+		end
 		if item and item.tip then
 			local tw = uiFont:getWidth(item.tip)
 			local th = uiFont:getHeight() * font:getLineHeight()
-			local px, py = camera:toWindow(grid:toPixel(hx, hy))
-			px, py = px + x0, py + y0
+			local px, py = camera:toWindow(grid:toPixel(item.hx, item.hy))
 			tip = {
 				text = item.tip,
 				x = math.min(px + grid.a, w - tw - 10),

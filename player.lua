@@ -232,9 +232,11 @@ local function showKeys(player, img)
 	local sc = (h / 18) / ih
 	local lh = font:getHeight() * font:getLineHeight()
 	local cw = font:getWidth('@')
-	local x, y = camera:toWindow(grid:toPixel(player.hx, player.hy + 3))
 	love.graphics.setColor(0.45, 0.45, 0.85, alpha)
+	local x, y = camera:toWindow(grid:toPixel(player.hx, player.hy + 3))
 	printAligned("Aim ship", x, y, 'center', 'bottom')
+	x, y = camera:toWindow(grid:toPixel(player.hx + 2, player.hy - 6))
+	printAligned("Mouse over objects to identify them.", x, y, 'center', 'center')
 	for i,dir in ipairs(grid.dirs) do
 		local key = keyForDirection(player, i - 1)[1]
 		if not key then
