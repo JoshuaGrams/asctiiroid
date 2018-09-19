@@ -274,6 +274,7 @@ function love.load(args)
 	newActors = {}
 
 	newGame()
+	help = false
 end
 
 local function triColorHex(g, col, row)
