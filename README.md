@@ -4,7 +4,7 @@ The Yam of Endor
 A small turn-based Roguelike space game.  Collect food and then
 return to the surface to feed a starving space colony.
 
-![screenshot](asctiiroid.jpg)
+![screenshot](screenshot.jpg)
 
 Keys (I've used scancodes, so these should be in the QWERTY
 positions even if you're using a different keyboard layout):
