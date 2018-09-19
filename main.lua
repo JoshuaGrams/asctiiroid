@@ -357,7 +357,8 @@ local function drawMenu(w, h)
 		if gameOver and i == 2 then
 			love.graphics.setColor(0.15, 0.15, 0.25)
 		else
-			love.graphics.setColor(0.3, 0.3, 0.5)
+			local hover = (i == options.hover) and 1.5 or 1
+			love.graphics.setColor(0.3 * hover, 0.3 * hover, 0.5 * hover)
 		end
 		love.graphics.print(option, x, y)
 		y = y + lineHeight
@@ -562,5 +563,30 @@ end
 function love.keyreleased(k, s)
 	if s == 'tab' then
 		help = false
+	end
+end
+
+function mouseOverMenu(y)
+	options.hover = false
+	local lineHeight = font:getHeight() * font:getLineHeight()
+	local menuTop = y0 + 0.5 * (h - #options * lineHeight)
+	local line = 1 + math.floor((y - menuTop) / lineHeight)
+	if line >= 1 and line <= #options then
+		options.selected = line
+		options.hover = line
+		return true
+	end
+	return false
+end
+
+function love.mousemoved(x, y)
+	if state == 'menu' then
+		mouseOverMenu(y)
+	end
+end
+
+function love.mousepressed(x, y, b)
+	if state == 'menu' and mouseOverMenu(y) then
+		menuSelect()
 	end
 end
