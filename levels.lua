@@ -9,7 +9,6 @@ return {
 		},
 		contents = {
 			{ 'upgrade', 'down', n=1 },
-			{ 'upgrade', 'food', min=2, max=5 },
 			{ 'upgrade', 'boost', min=1, max=3 },
 			{ 'upgrade', 'crystal', n=1 },
 			{ 'upgrade', 'multi', n=2 },
@@ -44,7 +43,7 @@ return {
 		},
 		contents = {
 			{ 'upgrade', 'down', n=1 },
-			{ 'upgrade', 'food', min=3, max=7 },
+			{ 'upgrade', 'food', min=4, max=10 },
 			{ 'upgrade', 'crystal', n=1 },
 			{ 'turret', 15, n=2 },
 		},
@@ -60,7 +59,7 @@ return {
 			branch = 0.007
 		},
 		contents = {
-			{ 'upgrade', 'food', min=2, max=7 },
+			{ 'upgrade', 'food', min=3, max=9 },
 			{ 'upgrade', 'down', n=1 },
 			{ 'upgrade', 'boost', min=1, max=3 },
 			{ 'upgrade', 'bounce', n=0.6 },
