@@ -25,8 +25,9 @@ Gamepad:
 * Left stick - Aim your ship.
 * A - Wait for one turn (drift at the current velocity).
 * X - Accelerate.
-* B - Boost (higher acceleration if you have fuel).
+* B - Fire a shot, if you have ammo.
 * Y (or left bumper) - Use an exit or grab an upgrade.
+* Right bumper - Boost (higher acceleration if you have fuel).
 * Start - go back to menu.
 
 

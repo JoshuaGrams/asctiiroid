@@ -448,7 +448,7 @@ local function drawSightlines(actor, bounds)
 	local x0, y0 = grid:toPixel(actor.hx, actor.hy)
 	for _,dir in ipairs(grid.dirs) do
 		local dx, dy = grid:toPixel(dir[1], dir[2])
-		local x, y = x0 + 3.5 * dx, y0 + 3.5 * dy
+		local x, y = x0 + 2 * dx, y0 + 2 * dy
 		dx, dy = extend(x, y, dx, dy, xMin, xMax, yMin, yMax)
 		love.graphics.line(x, y, x + dx, y + dy)
 	end
@@ -622,7 +622,7 @@ end
 function joystickpressed(name)
 	if state == 'menu' then
 		if name == 'wait' then name = 'select'
-		elseif name == 'boost' then name = 'back' end
+		elseif name == 'fire' then name = 'back' end
 	end
 	inputTriggered(name)
 end
@@ -632,10 +632,10 @@ function love.joystickadded(j)
 		gamepadInput:addStick(j, 'leftx', 'lefty')
 		gamepadInput:addButton(j, 'a', 'wait')
 		gamepadInput:addButton(j, 'x', 'accelerate')
-		gamepadInput:addButton(j, 'b', 'boost')
+		gamepadInput:addButton(j, 'b', 'fire')
 		gamepadInput:addButton(j, 'y', 'use')
 		gamepadInput:addButton(j, 'leftshoulder', 'use')
-		gamepadInput:addButton(j, 'rightshoulder', 'fire')
+		gamepadInput:addButton(j, 'rightshoulder', 'boost')
 		gamepadInput:addButton(j, 'start', 'menu')
 		gamepadInput:addButton(j, 'back', 'help')
 		gamepadInput:addButton(j, 'dpup', 'up')

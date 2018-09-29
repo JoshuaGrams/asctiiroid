@@ -141,14 +141,16 @@ local function update(self, dt)
 	local dir, len, isDown, isUp = toHex(self.rScale * r, th)
 	self.angle, self.direction, self.length = th, dir, len
 
+	local inputSent = false
+
 	if isDown then
 		if not self.down then
-			self.down = true
+			self.down, inputSent = true, true
 			self.pressed(self.aimControls[dir + 1])
 		end
 	elseif isUp then
 		if self.down then
-			self.down = false
+			self.down, inputSent = false, true
 			self.released(self.aimControls[dir + 1])
 		end
 	end
@@ -159,14 +161,18 @@ local function update(self, dt)
 			down = button(i.device, i.button) or down
 		end
 		if down ~= b.down then
-			b.down = down
+			b.down, inputSent = down, true
 			if down then self.pressed(name) else self.released(name) end
 		end
+	end
+
+	if x*x + y*y > 0.2 and not inputSent then
+		self.pressed('stick-moved')
 	end
 end
 
 local poly = {}
-local nSegs = 30
+local nSegs = 60
 for i=0,nSegs-1 do
 	local dir = 6 * i / nSegs
 	local ddir = abs(dir - math.floor(0.5 + dir))
@@ -181,25 +187,38 @@ local function draw(self, x, y, r, dr, alpha)
 	local th = self.angle
 	local dth = self.length * sector
 
-	local lw = love.graphics.getLineWidth()
-	local lj = love.graphics.getLineJoin()
-	local c = { love.graphics.getColor() }
-
-	local ourCircle = {}
+	local ourPoly = {}
 	for _,c in ipairs(poly) do
-		table.insert(ourCircle, c * r/self.rScale)
+		table.insert(ourPoly, c * r)
 	end
+	local triangles = love.math.triangulate(ourPoly)
 
 	love.graphics.push()
 	love.graphics.translate(x, y)
+	local lw = love.graphics.getLineWidth()
+	local c = { love.graphics.getColor() }
 	love.graphics.setLineWidth(dr)
-	love.graphics.setLineJoin('bevel')
+
 	love.graphics.setColor(0.2, 0.2, 0.2, alpha)
-	love.graphics.polygon('line', ourCircle)
+	for _,t in ipairs(triangles) do
+		love.graphics.polygon('fill', t)
+	end
+
+	love.graphics.setColor(0.6, 0.5, 0, alpha)
+	love.graphics.setLineWidth(1)
+	local r0, r1 = 0.3 * r, 0.85 * r
+	for i=0,5 do
+		local angle = i * sector
+		local dx, dy = cos(angle), sin(angle)
+		love.graphics.line(r0 * dx, r0 * dy, r1 * dx, r1 * dy)
+	end
+
 	love.graphics.setColor(0.5, 0.5, 0.5, alpha)
-	love.graphics.line(0, 0, r * self.length * cos(th), r * self.length * sin(th))
+	local rx, ry = cos(th), sin(th)
+	local rl = r * self.length - dr/2
+	love.graphics.circle('fill', rl * rx + 1, rl * ry, dr/2)
+
 	love.graphics.setColor(c)
-	love.graphics.setLineJoin(lj)
 	love.graphics.setLineWidth(lw)
 	love.graphics.pop()
 end
