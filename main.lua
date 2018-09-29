@@ -1,4 +1,5 @@
 local Camera = require 'camera'
+local Gamepad = require 'gamepad'
 local Collision = require 'collision'
 local HexGrid = require 'hex-grid'
 local Actor = require 'actor'
@@ -12,6 +13,8 @@ rooms = require 'rooms'
 levels = require 'levels'
 
 story = require 'story'
+
+local joystickpressed
 
 
 local function separateThousands(n)
@@ -238,6 +241,8 @@ function love.load(args)
 	end
 
 	mouseStarted = false
+	gamepadInput = Gamepad.new()
+	gamepadInput.pressed = joystickpressed
 
 	state = 'menu'
 	options = {
@@ -333,6 +338,20 @@ local function menuSelect()
 		state = 'intro'
 	elseif option == 'Exit' then
 		love.event.quit()
+	end
+end
+
+local function menuUp()
+	options.selected = 1 + (options.selected - 2) % #options
+	if gameOver and options.selected == 2 then
+		options.selected = 1
+	end
+end
+
+local function menuDown()
+	options.selected = 1 + options.selected % #options
+	if gameOver and options.selected == 2 then
+		options.selected = 3
 	end
 end
 
@@ -436,6 +455,12 @@ local function drawSightlines(actor, bounds)
 	love.graphics.setLineWidth(lwPrev)
 end
 
+local function drawGamepadStick()
+	if state ~= 'play' or gamepadInput.length < 0.05 then return end
+	local px, py = camera:toWindow(grid:toPixel(player.hx, player.hy))
+	gamepadInput:draw(px, py, 4 * grid.a, 0.75 * grid.a, 0.3)
+end
+
 function love.draw()
 	love.graphics.translate(x0, y0)
 	love.graphics.setScissor(x0, y0, w, h)
@@ -467,6 +492,7 @@ function love.draw()
 	-- Reset transform and draw UI
 	love.graphics.pop()
 	player:drawUI(0, 0, w)
+	drawGamepadStick()
 
 	if state == 'menu' then
 		drawMenu(w, h)
@@ -502,6 +528,8 @@ function love.update(dt)
 	end
 	local px, py = grid:toPixel(player.hx, player.hy)
 	local dx, dy = px - camera.cx, py - camera.cy
+
+	gamepadInput:update(dt)
 
 	if dx*dx + dy*dy > 1 then  -- More than 1 pixel out of bounds?
 		local cf, ct = 0.95, 0.9  -- Converge to 95% in 0.9 seconds.
@@ -542,39 +570,82 @@ local function nextTurn()
 	end
 end
 
-function love.keypressed(k, s)
+function inputTriggered(name)
 	if state == 'intro' then
 		state = 'play'
 	elseif state == 'ending' and not timeout then
 		state = 'menu'
 	elseif state == 'menu' and not timeout then
-		if k == 'down' or s == 'k' then
-			options.selected = 1 + options.selected % #options
-			if gameOver and options.selected == 2 then
-				options.selected = 3
-			end
-		elseif k == 'up' or s == 'i' then
-			options.selected = 1 + (options.selected - 2) % #options
-			if gameOver and options.selected == 2 then
-				options.selected = 1
-			end
-		elseif k == 'return' or k == 'space' then
+		if name == 'down' then
+			menuDown()
+		elseif name == 'up' then
+			menuUp()
+		elseif name == 'select' then
 			menuSelect()
-		elseif k == 'escape' then
+		elseif name == 'quit' then
 			love.event.quit()
+		elseif name == 'menu' or name == 'back' then
+			options.selected = gameOver and 3 or 2
+			menuSelect()
 		end
 	elseif state == 'play' then
 		if tip then tip = nil end
 		if help == true then help = 1 end
-		if k == 'escape' then
+		if name == 'menu' or name == 'quit' then
 			state = 'menu'
 			options.selected = 2
-		elseif player:keypressed(k, s) then
+		elseif player:input(name) then
 			nextTurn()
-		elseif s == 'tab' then
+		elseif name == 'help' then
 			help = true
 		end
 	end
+end
+
+function love.keypressed(k, s)
+	local name = player.scancodes[s]
+	name = name and name[1]
+	if not name then
+		if k == 'down' then name = 'down'
+		elseif k == 'up' then name = 'up'
+		elseif k == 'return' or k == 'space' then
+			name = 'select'
+		elseif k == 'escape' then
+			name = 'quit'
+		elseif s == 'tab' then
+			name = 'help'
+		end
+	end
+	inputTriggered(name)
+end
+
+function joystickpressed(name)
+	if state == 'menu' then
+		if name == 'wait' then name = 'select'
+		elseif name == 'boost' then name = 'back' end
+	end
+	inputTriggered(name)
+end
+
+function love.joystickadded(j)
+	if j:isGamepad() then
+		gamepadInput:addStick(j, 'leftx', 'lefty')
+		gamepadInput:addButton(j, 'a', 'wait')
+		gamepadInput:addButton(j, 'x', 'accelerate')
+		gamepadInput:addButton(j, 'b', 'boost')
+		gamepadInput:addButton(j, 'y', 'use')
+		gamepadInput:addButton(j, 'leftshoulder', 'use')
+		gamepadInput:addButton(j, 'rightshoulder', 'fire')
+		gamepadInput:addButton(j, 'start', 'menu')
+		gamepadInput:addButton(j, 'back', 'help')
+		gamepadInput:addButton(j, 'dpup', 'up')
+		gamepadInput:addButton(j, 'dpdown', 'down')
+	end
+end
+
+function love.joystickremoved(j)
+	-- Will fail harmlessly if not present (i.e. `j` was not a gamepad).
+	gamepadInput:removeDevice(j)
 end
 
 function mouseOverMenu(y)

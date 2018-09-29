@@ -19,23 +19,19 @@ local controls = {
 	boost      = { accelerate = 3 },
 }
 
-local function keypressed(self, k, s)
-	local name = self.scancodes[s]
-	if name then
-		name = name[1]
-		local c = controls[name]
-		if c.dir then self.controls.dir = c.dir end
-		if c.instant and type(c.instant) == 'function' then
-			c.instant(self)
-		end
-		for k,v in pairs(c) do
-			if k ~= 'dir' and k ~= 'instant' then
-				self.controls[k] = v
-			end
-		end
-		return not c.instant
+local function input(self, name)
+	local c = controls[name]
+	if not c then return false end
+	if c.dir then self.controls.dir = c.dir end
+	if c.instant and type(c.instant) == 'function' then
+		c.instant(self)
 	end
-	return false
+	for k,v in pairs(c) do
+		if k ~= 'dir' and k ~= 'instant' then
+			self.controls[k] = v
+		end
+	end
+	return not c.instant
 end
 
 local function fire(self, G)
@@ -371,6 +367,7 @@ local function drawUI(self, x, y, w)
 end
 
 local methods = {
+	input = input,
 	keypressed = keypressed,
 	update = update,
 	collide = collide,

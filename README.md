@@ -6,6 +6,9 @@ return to the surface to feed a starving space colony.
 
 ![screenshot](screenshot.jpg)
 
+I've used the Asteroids mechanic where you have a limited number
+of active bullets (3 in this case).
+
 Keys (I've used scancodes, so these should be in the QWERTY
 positions even if you're using a different keyboard layout):
 
@@ -17,8 +20,16 @@ positions even if you're using a different keyboard layout):
 * Space - Wait for one turn (drift at the current velocity).
 * Tab - show the control help.
 
-I've used the Asteroids mechanic where you have a limited number
-of active bullets (3 in this case).
+Gamepad:
+
+* Left stick - Aim your ship (triggers when the indicator completely
+  fills a sector).
+* A - Wait for one turn (drift at the current velocity).
+* X - Accelerate.
+* B - Boost (higher acceleration if you have fuel).
+* Y (or left bumper) - Use an exit or grab an upgrade.
+* Start - go back to menu.
+
 
 Enemies
 -------
