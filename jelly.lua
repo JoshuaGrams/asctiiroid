@@ -1,5 +1,6 @@
 local parent = require 'actor'
 local Bullet = require 'bullet'
+local Upgrade = require 'upgrade'
 
 local new
 
@@ -72,6 +73,8 @@ local function collisionResponse(self)
 				local dir = toOther(self, other)
 				split(self, dir)
 			end
+		elseif instanceOf(other, Upgrade) then
+			return false
 		end
 	end
 	return true
