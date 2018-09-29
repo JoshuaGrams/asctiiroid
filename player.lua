@@ -50,6 +50,7 @@ local function fire(self, G)
 			local oy = (dirs[1+d][2] + dirs[1+self.dir][2])/2
 			b.hx, b.hy = self.hx + 0.75*ox, self.hy + 0.75*oy
 			b.vx, b.vy = b.vx + ox/4, b.vy + oy/4
+			b.collider.x, b.collider.y = G:toPixel(b.hx, b.hy)
 			if self.shot == 'multi' then
 				-- short range
 				b.turns = math.ceil(b.turns/2.5)

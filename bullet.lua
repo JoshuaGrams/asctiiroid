@@ -74,7 +74,7 @@ class = { __index = setmetatable(methods, parent.class) }
 local function new(ship, kind)
 	local t = bulletType[kind]
 	local dx, dy = unpack(grid.dirs[1+ship.dir])
-	local hx, hy = ship.hx + ship.vx + dx, ship.hy + ship.vy + dy
+	local hx, hy = ship.hx + dx, ship.hy + dy
 	local b = parent.new(t.ch, hx, hy, ship.dir, t.color)
 
 	b.tip = "Bullet"
