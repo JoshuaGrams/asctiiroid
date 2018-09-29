@@ -63,6 +63,16 @@ Objects
 
 -----
 
+Thanks for playtesting and feedback to:
+
+* Michael Ackerson
+* Ross Grams
+* John Morgan, Jr.
+* Philippe Patenaude
+* Jason Woofenden
+
+-----
+
 I've had this idea in the back of my mind for a year or two.  I
 attempted it for the 2017 7DRL but had an unexpectedly bonkers
 week and only got as far as drawing a basic hex grid.
