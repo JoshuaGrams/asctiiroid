@@ -182,6 +182,7 @@ local function draw(self, x, y, r, dr, alpha)
 	local dth = self.length * sector
 
 	local lw = love.graphics.getLineWidth()
+	local lj = love.graphics.getLineJoin()
 	local c = { love.graphics.getColor() }
 
 	local ourCircle = {}
@@ -192,11 +193,13 @@ local function draw(self, x, y, r, dr, alpha)
 	love.graphics.push()
 	love.graphics.translate(x, y)
 	love.graphics.setLineWidth(dr)
+	love.graphics.setLineJoin('bevel')
 	love.graphics.setColor(0.2, 0.2, 0.2, alpha)
 	love.graphics.polygon('line', ourCircle)
 	love.graphics.setColor(0.5, 0.5, 0.5, alpha)
 	love.graphics.line(0, 0, r * self.length * cos(th), r * self.length * sin(th))
 	love.graphics.setColor(c)
+	love.graphics.setLineJoin(lj)
 	love.graphics.setLineWidth(lw)
 	love.graphics.pop()
 end
