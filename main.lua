@@ -41,7 +41,10 @@ local function actorCollision(G, W, actor, radius, static)
 	local x, y = G:toPixel(actor.hx, actor.hy)
 	actor.collider = { x=x, y=y, r=radius }
 	W:add(actor, static)
-	if static then actor.collide = false end
+	if static then
+		actor.m = 0
+		actor.collide = false
+	end
 end
 
 local rockChars = { 'O', '0', 'Q' }

@@ -22,9 +22,14 @@ local function update(self, g)
 				t = c.tMin * 0.999
 				e = c.e or 0.7  -- elasticity
 				-- bounce velocity in pixel coordinates
+				local ma, mb = c.m or 1, c.other.m or 1
 				local nv = c.dx * c.nx + c.dy * c.ny
-				local vx = c.vx - (1 + e) * nv * c.nx
-				local vy = c.vy - (1 + e) * nv * c.ny
+				local J = (1 + e) * nv
+				if ma ~= 0 and mb ~= 0 then
+					J = J * ma * mb / (ma + mb)
+				end
+				local vx = c.vx - J * c.nx
+				local vy = c.vy - J * c.ny
 				-- convert to hex and round to quarter units.
 				vx, vy = g:fromPixel(vx, vy)
 				vx = roundDownTo(vx, 0.25)

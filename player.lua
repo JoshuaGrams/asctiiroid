@@ -149,7 +149,7 @@ local function collisionResponse(self)
 				return true
 			elseif self.shield == 'crystal' then
 				self.shield = nil
-				self.collider.e = 0.1
+				self.collider.e = 0.2
 				hitShake()
 				return true
 			else
