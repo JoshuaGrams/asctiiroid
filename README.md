@@ -15,6 +15,7 @@ positions even if you're using a different keyboard layout):
 * E - Boost (higher acceleration if you have fuel).
 * R (or W) - Use an exit or grab an upgrade.
 * Space - Wait for one turn (drift at the current velocity).
+* Tab - show the control help.
 
 I've used the Asteroids mechanic where you have a limited number
 of active bullets (3 in this case).
@@ -52,7 +53,7 @@ Objects
 -----
 
 I've had this idea in the back of my mind for a year or two.  I
-attempted it for a past 7DRL but had an unexpectedly bonkers
+attempted it for the 2017 7DRL but had an unexpectedly bonkers
 week and only got as far as drawing a basic hex grid.
 
 --Josh Grams <josh@qualdan.com>
