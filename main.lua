@@ -216,6 +216,7 @@ function generateLevel(newPlayer)
 end
 
 local function newGame()
+	turns = 0
 	depth = 1
 	level = levels[depth]
 	generateLevel(level, true)
@@ -354,6 +355,8 @@ local function drawMenu(w, h)
 	for i,option in ipairs(options) do
 		if option == 'Restart' then
 			option = option .. ' Asteroid ' .. separateThousands(levels[1].seed)
+		elseif option == 'Continue Game' then
+			option = option .. ' (' .. separateThousands(turns) .. ' turns played)'
 		end
 		local optionWidth = font:getWidth(option)
 		local x = 0.5 * (w - optionWidth)
@@ -517,6 +520,7 @@ function love.update(dt)
 end
 
 local function nextTurn()
+	turns = turns + 1
 	local oldDepth = depth
 	newActors = {}
 
