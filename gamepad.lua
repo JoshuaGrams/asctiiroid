@@ -4,7 +4,7 @@
 -- B = afterburner
 -- Y = grab
 
-local sqrt = math.sqrt
+local abs, sqrt = math.abs, math.sqrt
 local cos, sin, atan2 = math.cos, math.sin, math.atan2
 local PI, TURN = math.pi, 2 * math.pi
 local floor = math.floor
@@ -138,7 +138,7 @@ local function update(self, dt)
 	y = self.y + k * (y - self.y)
 	self.x, self.y = x, y
 	local r, th = toPolar(x, y)
-	local dir, len, isDown, isUp = toHex(0.8 * r, th)
+	local dir, len, isDown, isUp = toHex(self.rScale * r, th)
 	self.angle, self.direction, self.length = th, dir, len
 
 	if isDown then
@@ -165,6 +165,16 @@ local function update(self, dt)
 	end
 end
 
+local poly = {}
+local nSegs = 30
+for i=0,nSegs-1 do
+	local dir = 6 * i / nSegs
+	local ddir = abs(dir - math.floor(0.5 + dir))
+	local len, th = max(ddir, 1 - ddir), dir * TURN / 6
+	table.insert(poly, len * cos(th))
+	table.insert(poly, len * sin(th))
+end
+
 local function draw(self, x, y, r, dr, alpha)
 	alpha = alpha or 0.6
 	local sector = TURN / 6
@@ -174,22 +184,21 @@ local function draw(self, x, y, r, dr, alpha)
 	local lw = love.graphics.getLineWidth()
 	local c = { love.graphics.getColor() }
 
-	love.graphics.setLineWidth(dr)
-	love.graphics.setColor(0.2, 0.2, 0.2, alpha)
-	love.graphics.circle('line', x, y, r)
-	love.graphics.setColor(0.5, 0.5, 0.5, alpha)
-	love.graphics.arc('line', 'open', x, y, r, th - dth, th + dth)
-	love.graphics.setColor(0.6, 0.5, 0, alpha)
-	love.graphics.setLineWidth(1)
-	local r0, r1 = r - dr/2, r + dr/2
-	for i=0,5 do
-		local angle = i * sector
-		local dx, dy = cos(angle), sin(angle)
-		love.graphics.line(x + r0 * dx, y + r0 * dy, x + r1 * dx, y + r1 * dy)
+	local ourCircle = {}
+	for _,c in ipairs(poly) do
+		table.insert(ourCircle, c * r/self.rScale)
 	end
 
+	love.graphics.push()
+	love.graphics.translate(x, y)
+	love.graphics.setLineWidth(dr)
+	love.graphics.setColor(0.2, 0.2, 0.2, alpha)
+	love.graphics.polygon('line', ourCircle)
+	love.graphics.setColor(0.5, 0.5, 0.5, alpha)
+	love.graphics.line(0, 0, r * self.length * cos(th), r * self.length * sin(th))
 	love.graphics.setColor(c)
 	love.graphics.setLineWidth(lw)
+	love.graphics.pop()
 end
 
 local methods = {
@@ -211,7 +220,7 @@ local function new()
 			'downright', 'down', 'downleft',
 			'upleft', 'up', 'upright'
 		},
-		x = 0, y = 0,
+		x = 0, y = 0, rScale = 0.9,
 		direction = 0, length = 0, down = false,
 		pressed = function(self, name) end,
 		released = function(self, name) end

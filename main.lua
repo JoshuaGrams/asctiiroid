@@ -458,7 +458,7 @@ end
 local function drawGamepadStick()
 	if state ~= 'play' or gamepadInput.length < 0.05 then return end
 	local px, py = camera:toWindow(grid:toPixel(player.hx, player.hy))
-	gamepadInput:draw(px, py, 4 * grid.a, 0.75 * grid.a, 0.3)
+	gamepadInput:draw(px, py, 4 * grid.a, 0.75 * grid.a, 0.2)
 end
 
 function love.draw()

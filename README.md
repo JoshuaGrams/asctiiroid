@@ -22,8 +22,7 @@ positions even if you're using a different keyboard layout):
 
 Gamepad:
 
-* Left stick - Aim your ship (triggers when the indicator completely
-  fills a sector).
+* Left stick - Aim your ship.
 * A - Wait for one turn (drift at the current velocity).
 * X - Accelerate.
 * B - Boost (higher acceleration if you have fuel).
