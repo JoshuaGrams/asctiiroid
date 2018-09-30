@@ -1,12 +1,15 @@
 local Camera = require 'camera'
 local Gamepad = require 'gamepad'
+local UI = require 'ui'
+
 local Collision = require 'collision'
 local HexGrid = require 'hex-grid'
 local Actor = require 'actor'
+-- Game objects.
 local Player = require 'player'
 local Jelly = require 'jelly'
 local Turret = require 'turret'
-local Upgrade = require 'upgrade'
+local Upgrade = require 'upgrade'  -- exits, food, items.
 Rock = { class = { __index = setmetatable({}, Actor.class) }}  -- for collision identification.
 
 rooms = require 'rooms'
@@ -491,7 +494,7 @@ function love.draw()
 
 	-- Reset transform and draw UI
 	love.graphics.pop()
-	player:drawUI(0, 0, w)
+	UI(player, 0, 0, w)
 	drawGamepadStick()
 
 	if state == 'menu' then
