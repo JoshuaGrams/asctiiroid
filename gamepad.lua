@@ -208,12 +208,17 @@ local function draw(self, x, y, r, dr, alpha)
 	local c = { love.graphics.getColor() }
 
 	love.graphics.setColor(0.5, 0.5, 0.5, alpha)
-	love.graphics.circle('fill', self.x * r, self.y * r, dr/2)
+	love.graphics.polygon('fill', {
+		self.x * r, self.y * r,
+		(-self.x - self.y) * 0.2 * r, (-self.y + self.x) * 0.2 * r,
+		0, 0,
+		(-self.x + self.y) * 0.2 * r, (-self.y - self.x) * 0.2 * r,
+	})
 
 	love.graphics.setLineWidth(2)
 	for i=0,5 do
-		local wt = self.wt * r - 0.5 * dr
-		local rt = self.rt * r + 0.5 * dr
+		local rt = self.rt * r
+		local wt = self.wt * rt
 		local angle = (i + 0.5) * sector
 		local ux, uy = cos(angle), sin(angle)
 		local vx, vy = -uy * wt, ux * wt
@@ -246,8 +251,7 @@ local function new()
 			'upleft', 'up', 'upright'
 		},
 		x = 0, y = 0,
-		rt = 0.8, wt = sin(0.6 * sector/2),
-		rt0 = 0.75, wt0 = 1.1,
+		rt = 0.8, wt = sin(0.8 * sector/2),
 		direction = 0, length = 0, down = false,
 		pressed = function(self, name) end,
 		released = function(self, name) end
