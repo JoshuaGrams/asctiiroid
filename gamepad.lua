@@ -80,7 +80,8 @@ local function inCones(x, y, cx, cy, w, posDir, negDir)
 	local along = (x * cx + y * cy) * rc2
 	if abs(along) < 1 then return false end
 	local xCross, yCross = x - along * cx, y - along * cy
-	local across2 = (xCross * xCross + yCross * yCross) * rc2
+	local rr2 = 1 / (x * x + y * y)
+	local across2 = (xCross * xCross + yCross * yCross) * rr2
 	if across2 > w * w then return false end
 	return along < 0 and negDir or posDir
 end
