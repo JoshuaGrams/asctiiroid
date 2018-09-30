@@ -81,7 +81,7 @@ local function inCones(x, y, cx, cy, w, posDir, negDir)
 	if abs(along) < 1 then return false end
 	local xCross, yCross = x - along * cx, y - along * cy
 	local across2 = (xCross * xCross + yCross * yCross) * rc2
-	if abs(across2) > w * w then return false end
+	if across2 > w * w then return false end
 	return along < 0 and negDir or posDir
 end
 
@@ -210,12 +210,14 @@ local function draw(self, x, y, r, dr, alpha)
 	love.graphics.setColor(0.5, 0.5, 0.5, alpha)
 	love.graphics.circle('fill', self.x * r, self.y * r, dr/2)
 
-	love.graphics.setLineWidth(dr)
-	local rt = self.rt * r + dr
+	love.graphics.setLineWidth(2)
 	for i=0,5 do
+		local wt = self.wt * r - 0.5 * dr
+		local rt = self.rt * r + 0.5 * dr
 		local angle = (i + 0.5) * sector
-		local ux, uy = rt * cos(angle), rt * sin(angle)
-		local vx, vy = -uy * self.wt, ux * self.wt
+		local ux, uy = cos(angle), sin(angle)
+		local vx, vy = -uy * wt, ux * wt
+		ux, uy = ux * rt, uy * rt
 		love.graphics.line(ux - vx, uy - vy, ux + vx, uy + vy)
 	end
 
@@ -244,7 +246,7 @@ local function new()
 			'upleft', 'up', 'upright'
 		},
 		x = 0, y = 0,
-		rt = 0.6, wt = sin(0.6 * sector/2),
+		rt = 0.8, wt = sin(0.6 * sector/2),
 		rt0 = 0.75, wt0 = 1.1,
 		direction = 0, length = 0, down = false,
 		pressed = function(self, name) end,
