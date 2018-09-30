@@ -53,24 +53,57 @@ local function button(device, button)
 	return x
 end
 
--- Convert to polar coordinates, apply threshold and square radius.
-local function toPolar(x, y)
+local function condition(old, dt, x, y)
+	-- Apply threshold and square result.
+	local r0, s = 0.15, 0
 	local r = sqrt(x * x + y * y)
-	local th = (r > 0) and atan2(y, x) or 0
-	local r0 = 0.15
-	r = (r - r0) / (1 - r0)
-	r = r * r
-	return r, th
+	if r > r0 then
+		s = max(0, r - r0) / (1 - r0)
+		s = s * s / r
+	end
+	x, y = x * s, y * s
+	-- Smooth over time.
+	local ct = 0.1  -- seconds of smoothing
+	local k = 1 - (1 - 0.9)^(dt/ct)
+	x = old.x + k * (x - old.x)
+	y = old.y + k * (y - old.y)
+	old.x, old.y = x, y
+	return x, y
 end
 
-local function toHex(r, th)
-	local stick = (6 * th / TURN) % 6
-	local left = floor(stick)
-	-- Does the stick region cover the whole sector?
-	local d = 0.2
-	local isDown = left >= stick - r and left + 1 < stick + r
-	local isUp = left < stick - d * r or left + 1 >= stick + d * r
-	return left, r, isDown, isUp
+local function roundTo(x, unit)
+	return floor(0.5 + x / unit) * unit
+end
+
+local function inCones(x, y, cx, cy, w, posDir, negDir)
+	local rc2 = 1 / (cx * cx + cy * cy)  -- reciprocal of |c|^2
+	local along = (x * cx + y * cy) * rc2
+	if abs(along) < 1 then return false end
+	local xCross, yCross = x - along * cx, y - along * cy
+	local across2 = (xCross * xCross + yCross * yCross) * rc2
+	if abs(across2) > w * w then return false end
+	return along < 0 and negDir or posDir
+end
+
+local sector = TURN / 6
+local hexAxes = {
+	{ cos(0.5 * sector), sin(0.5 * sector), 1, 4 },
+	{ cos(1.5 * sector), sin(1.5 * sector), 2, 5 },
+	{ cos(2.5 * sector), sin(2.5 * sector), 3, 6 }
+}
+
+-- return direction or false (released) or nil (ambiguous).
+local function toHex(x, y, r, w)
+	local released = true
+	for _,axis in ipairs(hexAxes) do
+		local cx, cy, posDir, negDir = unpack(axis)
+		local d = inCones(x, y, r * cx, r * cy, w, posDir, negDir)
+		if d then return d, false end
+		local r2, w2 = r * 0.8, w * 1.1
+		d = inCones(x, y, r2 * cx, r2 * cy, w2, posDir, negDir)
+		released = released and not d
+	end
+	return false, released
 end
 
 local function addStick(self, device, xAxis, yAxis, xDir, yDir)
@@ -132,26 +165,21 @@ local function update(self, dt)
 		local x2, y2 = stick(i.device, i.xAxis, i.yAxis, i.xDir, i.yDir)
 		x, y = mergeSticks(x, y, x2, y2)
 	end
-	local ct = 0.1  -- seconds of smoothing
-	local k = 1 - (1 - 0.9)^(dt/ct)
-	x = self.x + k * (x - self.x)
-	y = self.y + k * (y - self.y)
-	self.x, self.y = x, y
-	local r, th = toPolar(x, y)
-	local dir, len, isDown, isUp = toHex(self.rScale * r, th)
-	self.angle, self.direction, self.length = th, dir, len
+	x, y = condition(self, dt, x, y)
+	local dir, released = toHex(x, y, self.rt, self.wt)
+	self.length = sqrt(x * x + y * y)
 
 	local inputSent = false
 
-	if isDown then
-		if not self.down then
-			self.down, inputSent = true, true
-			self.pressed(self.aimControls[dir + 1])
+	if dir then
+		if dir ~= self.direction then
+			self.direction, inputSent = dir, true
+			self.pressed(self.aimControls[dir])
 		end
-	elseif isUp then
-		if self.down then
-			self.down, inputSent = false, true
-			self.released(self.aimControls[dir + 1])
+	elseif released then
+		if self.direction then
+			self.direction, inputSent = false, true
+			self.released(self.aimControls[dir])
 		end
 	end
 
@@ -166,57 +194,30 @@ local function update(self, dt)
 		end
 	end
 
-	if x*x + y*y > 0.2 and not inputSent then
+	if x*x + y*y > 0.01 and not inputSent then
 		self.pressed('stick-moved')
 	end
 end
 
-local poly = {}
-local nSegs = 60
-for i=0,nSegs-1 do
-	local dir = 6 * i / nSegs
-	local ddir = abs(dir - math.floor(0.5 + dir))
-	local len, th = max(ddir, 1 - ddir), dir * TURN / 6
-	table.insert(poly, len * cos(th))
-	table.insert(poly, len * sin(th))
-end
-
 local function draw(self, x, y, r, dr, alpha)
 	alpha = alpha or 0.6
-	local sector = TURN / 6
-	local th = self.angle
-	local dth = self.length * sector
-
-	local ourPoly = {}
-	for _,c in ipairs(poly) do
-		table.insert(ourPoly, c * r)
-	end
-	local triangles = love.math.triangulate(ourPoly)
 
 	love.graphics.push()
 	love.graphics.translate(x, y)
 	local lw = love.graphics.getLineWidth()
 	local c = { love.graphics.getColor() }
-	love.graphics.setLineWidth(dr)
-
-	love.graphics.setColor(0.2, 0.2, 0.2, alpha)
-	for _,t in ipairs(triangles) do
-		love.graphics.polygon('fill', t)
-	end
-
-	love.graphics.setColor(0.6, 0.5, 0, alpha)
-	love.graphics.setLineWidth(1)
-	local r0, r1 = 0.3 * r, 0.85 * r
-	for i=0,5 do
-		local angle = i * sector
-		local dx, dy = cos(angle), sin(angle)
-		love.graphics.line(r0 * dx, r0 * dy, r1 * dx, r1 * dy)
-	end
 
 	love.graphics.setColor(0.5, 0.5, 0.5, alpha)
-	local rx, ry = cos(th), sin(th)
-	local rl = r * self.length - dr/2
-	love.graphics.circle('fill', rl * rx + 1, rl * ry, dr/2)
+	love.graphics.circle('fill', self.x * r, self.y * r, dr/2)
+
+	love.graphics.setLineWidth(dr)
+	local rt = self.rt * r + dr
+	for i=0,5 do
+		local angle = (i + 0.5) * sector
+		local ux, uy = rt * cos(angle), rt * sin(angle)
+		local vx, vy = -uy * self.wt, ux * self.wt
+		love.graphics.line(ux - vx, uy - vy, ux + vx, uy + vy)
+	end
 
 	love.graphics.setColor(c)
 	love.graphics.setLineWidth(lw)
@@ -242,7 +243,9 @@ local function new()
 			'downright', 'down', 'downleft',
 			'upleft', 'up', 'upright'
 		},
-		x = 0, y = 0, rScale = 0.9,
+		x = 0, y = 0,
+		rt = 0.6, wt = sin(0.6 * sector/2),
+		rt0 = 0.75, wt0 = 1.1,
 		direction = 0, length = 0, down = false,
 		pressed = function(self, name) end,
 		released = function(self, name) end
