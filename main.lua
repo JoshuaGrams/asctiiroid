@@ -571,6 +571,7 @@ local function nextTurn()
 end
 
 function inputTriggered(name)
+	love.mouse.setVisible(false)
 	if state == 'intro' then
 		state = 'play'
 	elseif state == 'ending' and not timeout then
@@ -674,6 +675,7 @@ function love.mousemoved(x, y)
 		mouseStarted = true
 		return
 	end
+	love.mouse.setVisible(true)
 	if state == 'menu' then
 		mouseOverMenu(y)
 	elseif state == 'play' then
@@ -703,6 +705,7 @@ function love.mousemoved(x, y)
 end
 
 function love.mousepressed(x, y, b)
+	love.mouse.setVisible(true)
 	if state == 'intro' then
 		state = 'play'
 	elseif state == 'menu' and mouseOverMenu(y) then
