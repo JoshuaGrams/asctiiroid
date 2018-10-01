@@ -24,7 +24,6 @@ local function input(self, name)
 	if not c then return false end
 	local usesTurn = not c.instant
 	local prevCmd = self.prevCmd or {}
-	self.prevCmd = c
 	if c.dir then
 		if prevCmd.dir or self.dir == c.dir then
 			self.dir = c.dir
@@ -35,6 +34,7 @@ local function input(self, name)
 	end
 	if c.instant and type(c.instant) == 'function' then
 		c.instant(self)
+		self.prevCmd = c
 	end
 	for k,v in pairs(c) do
 		if k ~= 'dir' and k ~= 'instant' then
@@ -45,6 +45,7 @@ local function input(self, name)
 		self.controls.accelerate = nil
 		usesTurn = false
 	end
+	if usesTurn then self.prevCmd = c end
 	return usesTurn
 end
 
