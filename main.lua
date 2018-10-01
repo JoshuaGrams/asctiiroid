@@ -345,6 +345,7 @@ local function menuSelect()
 end
 
 local function menuUp()
+	options.hover = false
 	options.selected = 1 + (options.selected - 2) % #options
 	if gameOver and options.selected == 2 then
 		options.selected = 1
@@ -352,6 +353,7 @@ local function menuUp()
 end
 
 local function menuDown()
+	options.hover = false
 	options.selected = 1 + options.selected % #options
 	if gameOver and options.selected == 2 then
 		options.selected = 3
@@ -575,6 +577,7 @@ end
 
 function inputTriggered(name)
 	love.mouse.setVisible(false)
+	options.hover = false
 	if state == 'intro' then
 		state = 'play'
 	elseif state == 'ending' and not timeout then
