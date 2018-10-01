@@ -41,6 +41,10 @@ local function input(self, name)
 			self.controls[k] = v
 		end
 	end
+	if c.accelerate and c.accelerate > 1 and self.boost == 0 then
+		self.controls.accelerate = nil
+		usesTurn = false
+	end
 	return usesTurn
 end
 
