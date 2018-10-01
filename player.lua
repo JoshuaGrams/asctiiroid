@@ -22,7 +22,17 @@ local controls = {
 local function input(self, name)
 	local c = controls[name]
 	if not c then return false end
-	if c.dir then self.controls.dir = c.dir end
+	local usesTurn = not c.instant
+	local prevCmd = self.prevCmd or {}
+	self.prevCmd = c
+	if c.dir then
+		if prevCmd.dir or self.dir == c.dir then
+			self.dir = c.dir
+			usesTurn = false
+		else
+			self.controls.dir = c.dir
+		end
+	end
 	if c.instant and type(c.instant) == 'function' then
 		c.instant(self)
 	end
@@ -31,7 +41,7 @@ local function input(self, name)
 			self.controls[k] = v
 		end
 	end
-	return not c.instant
+	return usesTurn
 end
 
 local function fire(self, G)
@@ -212,7 +222,8 @@ local function new(char, hx, hy, dir, color, acceleration)
 		s = {'fire', 2},
 		d = {'accelerate', 1},
 		f = {'fire', 1},
-		space = {'wait', 1}
+		space = {'wait', 1},
+		a = {'wait', 2}
 	}
 	return setmetatable(p, class)
 end

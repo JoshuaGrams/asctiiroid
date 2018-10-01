@@ -17,7 +17,7 @@ positions even if you're using a different keyboard layout):
 * F (or S) - Fire a shot, if you have ammo.
 * E - Boost (higher acceleration if you have fuel).
 * R (or W) - Use an exit or grab an upgrade.
-* Space - Wait for one turn (drift at the current velocity).
+* A or Space - Coast at the current velocity for one turn.
 * Tab - show the control help.
 
 Gamepad:
