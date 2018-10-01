@@ -206,12 +206,12 @@ local function new(char, hx, hy, dir, color, acceleration)
 		j = {'downleft', 1},
 		k = {'down', 1},
 		l = {'downright', 1},
-		w = {'use', 1},
+		w = {'use', 2},
 		e = {'boost', 1},
-		r = {'use', 2},
-		s = {'fire', 1},
+		r = {'use', 1},
+		s = {'fire', 2},
 		d = {'accelerate', 1},
-		f = {'fire', 2},
+		f = {'fire', 1},
 		space = {'wait', 1}
 	}
 	return setmetatable(p, class)

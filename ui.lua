@@ -1,8 +1,8 @@
 local Bullet = require 'bullet'
 
-local function scancodeForControl(player, name)
+local function scancodesForControl(scancodes, name)
 	local ret = {}
-	for s,nm in pairs(player.scancodes) do
+	for s,nm in pairs(scancodes) do
 		if nm[1] == name then
 			ret[nm[2]] = s
 		end
@@ -10,8 +10,8 @@ local function scancodeForControl(player, name)
 	return ret
 end
 
-local function keyForControl(player, name)
-	local scan = scancodeForControl(player, name)
+local function keysForControl(scancodes, name)
+	local scan = scancodesForControl(scancodes, name)
 	for i,s in ipairs(scan) do
 		scan[i] = love.keyboard.getKeyFromScancode(s)
 	end
@@ -22,10 +22,6 @@ local dirNames = {
 	'downright', 'down', 'downleft',
 	'upleft', 'up', 'upright'
 }
-
-local function keyForDirection(player, dir)
-	return keyForControl(player, dirNames[dir + 1])
-end
 
 local function printAligned(text, x, y, horiz, vert)
 	local f = love.graphics.getFont()
@@ -40,7 +36,23 @@ local function printAligned(text, x, y, horiz, vert)
 	love.graphics.print(text, x, y)
 end
 
+local function showKey(char, x, y, sc, cw, ch, alpha, label, lx, ly)
+	local iw, ih = img.key:getDimensions()
+	love.graphics.setColor(1, 1, 1, alpha)
+	love.graphics.draw(img.key, x, y, 0, sc, sc, iw/2, ih/2)
+	love.graphics.setColor(0, 0, 0, alpha)
+	love.graphics.print(char, x, y, 0, 1, 1, cw/2, ch/2)
+	if label then
+		x, y = x + lx, y + ly
+		local hAlign = lx < 0 and 'right' or 'left'
+		local vAlign = ly < 0 and 'bottom' or 'top'
+		love.graphics.setColor(0.45, 0.45, 0.85, alpha)
+		printAligned(label, x, y, hAlign, vAlign)
+	end
+end
+
 local function showKeys(player, img)
+	local scancodes = player.scancodes
 	local alpha = type(help) == "number" and math.min(help, 1) or 1
 	love.graphics.setColor(0.1, 0.1, 0.1, alpha * 0.6)
 	love.graphics.rectangle('fill', 0, 0, w, h)
@@ -56,59 +68,28 @@ local function showKeys(player, img)
 	printAligned("Mouse over objects to identify them.", x, y, 'center', 'center')
 	printAligned("\"Shadows\" show where things will be next turn.", x, y + 1.5 * lh, 'center', 'center')
 	for i,dir in ipairs(grid.dirs) do
-		local key = keyForDirection(player, i - 1)[1]
-		if not key then
-			error("no control found for direction " .. i)
-		end
 		local hx, hy = player.hx + 1.5 * dir[1], player.hy + 1.5 * dir[2]
 		local x, y = camera:toWindow(grid:toPixel(hx, hy))
-		love.graphics.setColor(1, 1, 1, alpha)
-		love.graphics.draw(img.key, x, y, 0, sc, sc, iw/2, ih/2)
-		love.graphics.setColor(0, 0, 0, alpha)
-		love.graphics.print(key, x, y, 0, 1, 1, cw/2, lh/2)
+		local key = keysForControl(scancodes, dirNames[i])[1]
+		showKey(key, x, y, sc, cw, lh, alpha)
 	end
 
 	x, y = camera:toWindow(grid:toPixel(player.hx, player.hy))
 	x = x - 11 * grid.a
 	y = y - 0.5 * grid.a
 	local pad = grid.a / 2.5
-	local coords = {
-		{
-			{
-				x - 2*(iw*sc + pad),  y - (ih*sc + pad)/2,
-				key=keyForControl(player, 'boost')[1],
-				tip = "Afterburner", tx = -1, ty = -1.5*grid.a
-			},
-			{
-				x - 1*(iw*sc + pad),  y - (ih*sc + pad)/2,
-				key=keyForControl(player, 'use')[2],
-				tip = "Use item/exit", tx = 1, ty = -1.5*grid.a
-			},
-		}, {
-			{
-				x - 2*(iw*sc + pad),  y + (ih*sc + pad)/2,
-				key=keyForControl(player, 'accelerate')[1],
-				tip = "Accelerate", tx = -1, ty = 1.5*grid.a
-			},
-			{
-				x - 1*(iw*sc + pad),  y + (ih*sc + pad)/2,
-				key=keyForControl(player, 'fire')[2],
-				tip = "Fire", tx = 1, ty = 1.5*grid.a
-			}
-		}
+	local kw, kh = iw * sc + pad, ih * sc + pad
+	local actions = {
+		{{'boost', "Afterburner"}, {'use', "Use item/exit"}},
+		{{'accelerate', "Accelerate"}, {'fire', "Fire"}}
 	}
-	for _,row in ipairs(coords) do
-		for _,item in ipairs(row) do
-			love.graphics.setColor(1, 1, 1, alpha)
-			local px, py = unpack(item)
-			love.graphics.draw(img.key, px, py, 0, sc, sc, iw/2, ih/2)
-			love.graphics.setColor(0, 0, 0, alpha)
-			love.graphics.print(item.key, px, py, 0, 1, 1, cw/2, lh/2)
-			px, py = px + item.tx, py + item.ty
-			local hAlign = item.tx < 0 and 'right' or 'leftt'
-			local vAlign = item.ty < 0 and 'bottom' or 'top'
-			love.graphics.setColor(0.45, 0.45, 0.85, alpha)
-			printAligned(item.tip, px, py, hAlign, vAlign)
+	for r,row in ipairs(actions) do
+		for c,item in ipairs(row) do
+			local ctrl, tip = unpack(item)
+			local px, py = x + (c - 3) * kw, y + (r - 1.5) * kh
+			local tx, ty = (c - 1.5) * 2, (r - 1.5) * 3 * grid.a
+			local key = keysForControl(scancodes, ctrl)[1]
+			showKey(key, px, py, sc, cw, lh, alpha, tip, tx, ty)
 		end
 	end
 end
