@@ -246,6 +246,7 @@ function love.load(args)
 	mouseStarted = false
 	gamepadInput = Gamepad.new()
 	gamepadInput.pressed = joystickpressed
+	lastInputDevice = 'keyboard'
 
 	state = 'menu'
 	options = {
@@ -273,6 +274,7 @@ function love.load(args)
 
 	img = {
 		key = love.graphics.newImage('img/key.png'),
+		button = love.graphics.newImage('img/button.png')
 	}
 
 	local a = h / 40
@@ -623,6 +625,7 @@ function love.keypressed(k, s)
 			name = 'help'
 		end
 	end
+	lastInputDevice = 'keyboard'
 	inputTriggered(name)
 end
 
@@ -631,6 +634,7 @@ function joystickpressed(name)
 		if name == 'wait' then name = 'select'
 		elseif name == 'fire' then name = 'back' end
 	end
+	lastInputDevice = 'gamepad'
 	inputTriggered(name)
 end
 

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg46"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="button.svg">
+  <defs
+     id="defs40">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient4606">
+      <stop
+         style="stop-color:#646464;stop-opacity:1"
+         offset="0"
+         id="stop4602" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1"
+         offset="1"
+         id="stop4604" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4600"
+       inkscape:collect="always">
+      <stop
+         id="stop4596"
+         offset="0"
+         style="stop-color:#000000;stop-opacity:1;" />
+      <stop
+         id="stop4598"
+         offset="1"
+         style="stop-color:#ffffff;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4600"
+       id="linearGradient4575"
+       x1="140.61763"
+       y1="158.89818"
+       x2="61.081703"
+       y2="94.955528"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4606"
+       id="linearGradient4594"
+       gradientUnits="userSpaceOnUse"
+       x1="29.118267"
+       y1="113.39773"
+       x2="129.28036"
+       y2="123.67617"
+       gradientTransform="matrix(0.36347802,0,0,0.65362419,-159.29721,-143.10321)" />
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter4620"
+       x="-0.052463571"
+       width="1.1049271"
+       y="-0.038482087"
+       height="1.0769642">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.51172132"
+         id="feGaussianBlur4622" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.8142857"
+     inkscape:cx="396.85039"
+     inkscape:cy="620.10384"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata43">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <circle
+       style="fill:url(#linearGradient4575);stroke:none;stroke-width:0.26458332;fill-opacity:1"
+       id="path48"
+       cx="95.25"
+       cy="120.10714"
+       r="26.458332"
+       inkscape:export-xdpi="46.220001"
+       inkscape:export-ydpi="46.220001" />
+    <ellipse
+       cy="-64.598305"
+       cx="-124.67593"
+       id="circle4590"
+       style="fill:url(#linearGradient4594);fill-opacity:1;stroke:none;stroke-width:0.12896314;filter:url(#filter4620)"
+       transform="matrix(-0.894379,-0.44730997,0.45893913,-0.88846771,-0.37539704,-0.25026469)"
+       rx="9.6170206"
+       ry="17.293806"
+       inkscape:export-xdpi="46.220001"
+       inkscape:export-ydpi="46.220001" />
+  </g>
+</svg>
