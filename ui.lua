@@ -1,4 +1,6 @@
 local Bullet = require 'bullet'
+local NinePatch = require 'nine-patch'
+local stretchyKey = NinePatch.new('img/key.png', 10)
 
 local function scancodesForControl(scancodes, name)
 	local ret = {}
@@ -92,6 +94,13 @@ local function showKeys(player, img)
 			showKey(key, px, py, sc, cw, lh, alpha, tip, tx, ty)
 		end
 	end
+	love.graphics.setColor(1, 1, 1, alpha)
+	local px, py = x - 2.5 * kw, y + 2.5 * kh
+	stretchyKey:draw(px, py, 2 * kw)
+	love.graphics.setColor(0, 0, 0, alpha)
+	love.graphics.print('space', px + 0.25 * kw, py)
+	love.graphics.setColor(0.45, 0.45, 0.85, alpha)
+	printAligned('Coast', px + kw, py + kh, 'top', 'left')
 end
 
 local function showTip()
