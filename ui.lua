@@ -96,9 +96,9 @@ local function showKeys(player, img)
 	end
 	love.graphics.setColor(1, 1, 1, alpha)
 	local px, py = x - 2.5 * kw, y + 2.5 * kh
-	stretchyKey:draw(px, py, 2 * kw)
+	stretchyKey:draw(px, py, 2 * kw * sc, ih * sc)
 	love.graphics.setColor(0, 0, 0, alpha)
-	love.graphics.print('space', px + 0.25 * kw, py)
+	love.graphics.print('space', px + 0.25 * kw, py + (ih * sc - lh) / 2)
 	love.graphics.setColor(0.45, 0.45, 0.85, alpha)
 	printAligned('Coast', px + kw, py + kh, 'top', 'left')
 end
