@@ -1,9 +1,3 @@
--- Configure buttons as follows?
--- A = accelerate
--- X = fire
--- B = afterburner
--- Y = grab
-
 local abs, sqrt = math.abs, math.sqrt
 local cos, sin, atan2 = math.cos, math.sin, math.atan2
 local PI, TURN = math.pi, 2 * math.pi
@@ -28,7 +22,7 @@ local function axis(device, axis, dir)
 	elseif type(axis) == 'string' then
 		x = device:getGamepadAxis(axis)
 	else
-		error("Axis must be a number(joystick axis) or string (gamepad axis).")
+		error("Axis must be a number (joystick axis) or string (gamepad axis).")
 	end
 	return x * (dir or 1)
 end
