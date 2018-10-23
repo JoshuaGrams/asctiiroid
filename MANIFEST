@@ -1,4 +1,6 @@
 img/key.png
+img/button.png
+img/bumper.png
 LICENSE.txt
 README.md
 RobotoMono-Regular.ttf
@@ -13,6 +15,7 @@ hex-grid.lua
 jelly.lua
 levels.lua
 main.lua
+nine-patch.lua
 player.lua
 rooms.lua
 screenshot.jpg
