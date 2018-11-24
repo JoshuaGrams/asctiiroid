@@ -210,7 +210,6 @@ local function draw(self, x, y, r, dr, alpha)
 		(-self.x + self.y) * 0.2 * r, (-self.y - self.x) * 0.2 * r,
 	})
 
-	love.graphics.setLineWidth(2)
 	for i=0,5 do
 		local rt = self.rt * r
 		local wt = self.wt * rt
@@ -218,6 +217,13 @@ local function draw(self, x, y, r, dr, alpha)
 		local ux, uy = cos(angle), sin(angle)
 		local vx, vy = -uy * wt, ux * wt
 		ux, uy = ux * rt, uy * rt
+		if i + 1 == self.direction then
+			love.graphics.setLineWidth(5)
+			love.graphics.setColor(0.8, 0.8, 0.8, alpha)
+		else
+			love.graphics.setLineWidth(2)
+			love.graphics.setColor(0.5, 0.5, 0.5, alpha)
+		end
 		love.graphics.line(ux - vx, uy - vy, ux + vx, uy + vy)
 	end
 
