@@ -80,11 +80,10 @@ local function showButtons(player, img)
 	x = x + 11 * grid.a
 	y = y + 2.5 * grid.a
 	local sp = 2 * grid.a
-	showKey(false, bumper, x, y - 1.5 * sp, sc, cw, lh, alpha, 'Afterburner', 2.5 * grid.a, -1)
 	showKey(false, img, x, y, sc, cw, lh, alpha, 'Use item/exit', 1.5 * grid.a, -1)
-	showKey(false, img, x - sp, y + sp, sc, cw, lh, alpha, 'Accelerate', -2 * grid.a, 0)
-	showKey(false, img, x + sp, y + sp, sc, cw, lh, alpha, 'Fire', 2 * grid.a, 0)
-	showKey(false, img, x, y + 2 * sp, sc, cw, lh, alpha, 'Coast', 1, 1.5 * grid.a)
+	showKey(false, img, x - sp, y + sp, sc, cw, lh, alpha, 'Fire', -2 * grid.a, 0)
+	showKey(false, img, x + sp, y + sp, sc, cw, lh, alpha, 'Afterburner', 2 * grid.a, 0)
+	showKey(false, img, x, y + 2 * sp, sc, cw, lh, alpha, 'Move', 1, 1.5 * grid.a)
 end
 
 local function showKeys(player, img)

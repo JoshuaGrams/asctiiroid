@@ -629,10 +629,25 @@ function love.keypressed(k, s)
 	inputTriggered(name)
 end
 
+local isAimControl = {
+	downright = true, down = true, downleft = true,
+	upleft = true, up = true, upright = true
+}
+
 function joystickpressed(name)
 	if state == 'menu' then
-		if name == 'wait' then name = 'select'
-		elseif name == 'fire' then name = 'back' end
+		if name == 'accelerate' then name = 'select'
+		elseif name == 'boost' then name = 'back' end
+	elseif state == 'play' then
+		if isAimControl[name] then
+			return
+		elseif name == 'accelerate' or name == 'boost' then
+			if not gamepadInput.direction then
+				name = 'wait'
+			elseif gamepadInput.direction ~= player.dir + 1 then
+				name = gamepadInput.aimControls[gamepadInput.direction]
+			end
+		end
 	end
 	lastInputDevice = 'gamepad'
 	inputTriggered(name)
@@ -641,12 +656,10 @@ end
 function love.joystickadded(j)
 	if j:isGamepad() then
 		gamepadInput:addStick(j, 'leftx', 'lefty')
-		gamepadInput:addButton(j, 'a', 'wait')
-		gamepadInput:addButton(j, 'x', 'accelerate')
-		gamepadInput:addButton(j, 'b', 'fire')
+		gamepadInput:addButton(j, 'a', 'accelerate')
+		gamepadInput:addButton(j, 'x', 'fire')
+		gamepadInput:addButton(j, 'b', 'boost')
 		gamepadInput:addButton(j, 'y', 'use')
-		gamepadInput:addButton(j, 'leftshoulder', 'use')
-		gamepadInput:addButton(j, 'rightshoulder', 'boost')
 		gamepadInput:addButton(j, 'start', 'menu')
 		gamepadInput:addButton(j, 'back', 'help')
 		gamepadInput:addButton(j, 'dpup', 'up')
