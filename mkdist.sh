@@ -40,7 +40,7 @@ rm -f "$win.zip"
 rm -f "$win32.zip"
 rm -f "$mac.zip"
 
-"$zip" a -tzip -mx9 "$win.zip" "$win32"
+"$zip" a -tzip -mx9 "$win.zip" "$win"
 "$zip" a -tzip -mx9 "$win32.zip" "$win32"
 "$zip" a -tzip -mx9 "$mac.zip" "$mac"
 
