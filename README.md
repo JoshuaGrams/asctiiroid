@@ -6,15 +6,14 @@ return to the surface to feed a starving space colony.
 
 ![screenshot](screenshot.jpg)
 
-I've used the Asteroids mechanic where you have a limited number
-of active bullets (3 in this case).
+I've used the Asteroids mechanic where you have unlimited ammo, but only 3 bullets can be active at once.
 
 Keys (I've used scancodes, so these should be in the QWERTY
 positions even if you're using a different keyboard layout):
 
 * UIO/JKL (right hand) - Aim your ship.
 * D - Accelerate.
-* F (or S) - Fire a shot, if you have ammo.
+* F (or S) - Shoot, if you have ammo.
 * E - Boost (higher acceleration if you have fuel).
 * R (or W) - Use an exit or grab an upgrade.
 * A or Space - Coast at the current velocity for one turn.
@@ -23,11 +22,10 @@ positions even if you're using a different keyboard layout):
 Gamepad:
 
 * Left stick - Aim your ship.
-* A - Wait for one turn (drift at the current velocity).
-* X - Accelerate.
-* B - Fire a shot, if you have ammo.
-* Y (or left bumper) - Use an exit or grab an upgrade.
-* Right bumper - Boost (higher acceleration if you have fuel).
+* A - Move (accelerate or coast, depending on left-stick position).
+* X - Shoot, if you have ammo.
+* B - Boost (higher acceleration if you have fuel).
+* Y - Use an exit or grab an upgrade.
 * Start - go back to menu.
 
 
