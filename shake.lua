@@ -4,9 +4,9 @@ local function update(s, dt, camera)
 	if s.remaining < 0 then return end
 
 	local k = s.remaining / s.duration
-	local x = (noise(s.seed, s.remaining * s.freq) - 0.5) * 2
-	local y = (noise(s.seed, s.remaining * s.freq) - 0.5) * 2
-	local angle = (noise(s.seed, s.remaining * s.freq) - 0.5) * 2
+	local x = (noise(s.seed+0, s.remaining * s.freq) - 0.5) * 2
+	local y = (noise(s.seed+1, s.remaining * s.freq) - 0.5) * 2
+	local angle = (noise(s.seed+2, s.remaining * s.freq) - 0.5) * 2
 	local d = s.magnitude * k
 	x, y = x * d, y * d
 	angle = angle * s.rotationMagnitude
