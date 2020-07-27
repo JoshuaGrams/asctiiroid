@@ -8,6 +8,7 @@ fi
 
 zip="/c/Program Files/7-Zip/7z.exe"
 
+title="Yam of Endor"
 prefix="yam-of-endor"
 name="$prefix-$1"
 mac="$name.app"
@@ -31,7 +32,7 @@ rm "dist/$win/love.exe"
 cat "dist/$win32/love.exe" "dist/$name.love" >"dist/$win32/$name.exe"
 rm "dist/$win32/love.exe"
 
-sed -e "s/GAME_URL_HERE/com.qualdan.yam-of-endor/;s/GAME_NAME_HERE/Yam of Endor/" "../love-versions/Info.plist" >"dist/$mac/Contents/Info.plist"
+sed -e "s/GAME_URL_HERE/com.qualdan.$prefix/;s/GAME_NAME_HERE/$title/" "../love-versions/Info.plist" >"dist/$mac/Contents/Info.plist"
 cp "dist/$name.love" "dist/$mac/Contents/Resources/"
 
 cd dist
