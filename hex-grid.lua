@@ -43,7 +43,7 @@ local function roundHex(g, x, y)
 	local z = -x - y
 	local rx, ry, rz = math.floor(x+.5), math.floor(y+.5), math.floor(z+.5)
 	local dx, dy, dz = math.abs(rx-x), math.abs(ry-y), math.abs(rz-z)
-	if dx > dy and dy > dz then
+	if dx > dy and dx > dz then
 		rx = -ry - rz
 	elseif dy > dz then
 		ry = -rx - rz
@@ -77,7 +77,6 @@ local function forCellsIn(g, b, fn, ...)
 	local pw, ph = b.xMax - b.xMin, b.yMax - b.yMin
 	local x0, y0 = g:round(g:fromPixel(b.xMin - g.b, b.yMin))
 	local w, h = math.ceil(pw/g.dx), math.ceil(0.5 + ph/g.dy)
-	local p = g.points
 	for ix=x0,x0+w do
 		local ox = ix - (x0-1)
 		local y0 = y0 - math.floor(0.5*ox)
